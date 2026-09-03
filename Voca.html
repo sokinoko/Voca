@@ -10,6 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="단어장">
 <meta name="theme-color" content="#FBFAF7">
+<link rel="manifest" href="manifest.json">
 <style>
 :root{
   --paper:#FBFAF7; --ink:#16181C; --graphite:#565C66; --rule:#DEDAD1;
@@ -196,18 +197,32 @@ let prog = {}, star = {};
 let state = {mode:'list', exam:'전체', area:'전체', only:'전체', apx:'전체', tag:null, q:'', reveal:false};
 let deck = [], di = 0, shown = false, quizQ = null, answered = false;
 
+/* Claude 앱 안에서는 window.storage, 그 밖(깃허브 등)에서는 localStorage */
+const store = {
+  async get(k){
+    if(window.storage && window.storage.get){
+      try{ const r = await window.storage.get(k); if(r && r.value) return r.value; }catch(e){}
+    }
+    try{ return localStorage.getItem(k); }catch(e){ return null; }
+  },
+  async set(k, v){
+    if(window.storage && window.storage.set){
+      try{ await window.storage.set(k, v); }catch(e){}
+    }
+    try{ localStorage.setItem(k, v); }catch(e){}
+  }
+};
+
 let saveT = null;
 function save(){
   clearTimeout(saveT);
-  saveT = setTimeout(async ()=>{
-    try{ await window.storage.set(KEY, JSON.stringify({p:prog, s:star})); }catch(e){}
-  }, 400);
+  saveT = setTimeout(()=>{ store.set(KEY, JSON.stringify({p:prog, s:star})); }, 400);
 }
 async function load(){
   try{
-    const r = await window.storage.get(KEY);
-    if(r && r.value){
-      const d = JSON.parse(r.value);
+    const v = await store.get(KEY);
+    if(v){
+      const d = JSON.parse(v);
       if(d && d.p){ prog = d.p||{}; star = d.s||{}; }
       else { prog = d||{}; }        // 예전 저장본 이어받기
     }
@@ -529,6 +544,10 @@ document.addEventListener('input', e=>{
 });
 
 load().then(render);
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 </script>
 </body>
 </html>
