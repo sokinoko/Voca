@@ -148,8 +148,8 @@ td{padding:9px 4px;vertical-align:top}
 .qs{font-size:10px;color:#9aa0aa;margin-left:5px}
 .ax-q .pos{color:#8a8f98}
 .ql{height:17px;border-bottom:1px solid var(--rule);margin-top:3px}
-.ansbox{margin-top:16px;border-top:2px solid var(--ink);padding-top:8px;font-size:12px}
-.ansbox.hidden{display:none}
+.ansbox{margin-top:26px;border-top:3px double var(--ink);padding-top:10px;font-size:12px}
+.ansbox .sh{border-bottom:1px solid var(--rule)}
 .ansgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 12px;margin-top:6px}
 .an{color:#3f454e;font-size:11.5px}
 .an b{font-family:var(--serif);color:var(--ink);margin-right:3px}
@@ -159,6 +159,10 @@ td{padding:9px 4px;vertical-align:top}
   .sheet{margin:0}
   .q{break-inside:avoid}
   .ql{border-bottom:1px solid #999}
+  .ansbox{page-break-before:always;border-top:0;margin-top:0}   /* 정답지는 항상 새 장 */
+  body.pq .ansbox{display:none!important}                        /* 시험지만 */
+  body.pa .sheet{display:none!important}                         /* 정답지만 */
+  body.pa .ansbox{page-break-before:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:520px){
@@ -438,8 +442,9 @@ function viewSheet(list){
     <div class="seg"><button data-sheet="prev">◀ 이전</button>
       <button data-sheet="next">다음 ▶</button></div>
     <button class="chip" data-sheet="shuffle">다시 섞기</button>
-    <button class="chip" data-sheet="ans" aria-pressed="${showAns}">정답 ${showAns?'숨기기':'보기'}</button>
-    <button class="chip" data-sheet="print">인쇄 / PDF 저장</button>
+    <button class="chip" data-sheet="printq">시험지만 인쇄</button>
+    <button class="chip" data-sheet="printa">정답지만 인쇄</button>
+    <button class="chip" data-sheet="printall">둘 다 인쇄</button>
   </div>`;
 
   return controls()+nav+`<div class="sheet">
@@ -449,7 +454,13 @@ function viewSheet(list){
         &nbsp;|&nbsp; 이름 ______________ 점수 ______ / ${rows.length}</div>
     </div>
     <div class="qs-wrap">${body}</div>
-    <div class="ansbox ${showAns?'':'hidden'}"><b>정답</b><div class="ansgrid">${ans}</div></div>
+  </div>
+  <div class="ansbox">
+    <div class="sh">
+      <div class="sht">정답지 <span>세트 ${sheetNo+1} / ${total}</span></div>
+      <div class="shs">단어 시험지 세트 ${sheetNo+1} 정답 · 총 ${rows.length}문항 — 잘라서 따로 보관하세요.</div>
+    </div>
+    <div class="ansgrid">${ans}</div>
   </div>`;
 }
 
@@ -545,9 +556,14 @@ document.addEventListener('click', e=>{
   }
   if(t.dataset.sheet){
     const a = t.dataset.sheet;
-    if(a==='print'){ window.print(); return; }
-    if(a==='shuffle'){ buildSheets(filtered(), true); showAns=false; }
-    else if(a==='ans') showAns = !showAns;
+    if(a.startsWith('print')){
+      const cls = a==='printq' ? 'pq' : (a==='printa' ? 'pa' : '');
+      if(cls) document.body.classList.add(cls);
+      window.print();
+      setTimeout(()=>document.body.classList.remove('pq','pa'), 500);
+      return;
+    }
+    if(a==='shuffle'){ buildSheets(filtered(), true); }
     else if(a==='next') sheetNo++;
     else if(a==='prev') sheetNo = Math.max(0, sheetNo-1);
     render(); return;
