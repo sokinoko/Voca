@@ -1,4 +1,4 @@
-const CACHE = 'voca-v1';
+const CACHE = 'voca-v2';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {

@@ -32,6 +32,7 @@
   --red:#D33227; --redsoft:#F4D9D6; --mark:#1B1D22; --yellow:#FBE9A6;
   --card:#ffffff; --ink2:#3f454e; --ink3:#2c3037; --faint:#9aa0aa;
   --ok:#1a7f4b; --oksoft:#e6f4ec; --press:#f0f4f9; --guide:#b9bec6; --blue:#1558c8;
+  --fs:1;   /* 글자 크기 배율. 본문만 키우고 표·그림은 그대로 둔다 */
   --serif:"Hahmlet","Times New Roman",Times,Georgia,serif;
   --sans:"Hahmlet",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
 }
@@ -48,7 +49,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);
-  font-size:15px;line-height:1.5;padding-bottom:80px;
+  font-size:calc(15px * var(--fs, 1));line-height:1.5;padding-bottom:80px;
   /* 한글은 어절 단위로 끊는다. Hahmlet이 고딕보다 넓어 '단어장'이
      '단 / 어장'처럼 음절 중간에서 갈리던 것을 막는다.
      한 어절이 칸보다 길면 그때만 강제로 끊는다. */
@@ -87,9 +88,9 @@ table{width:100%;border-collapse:collapse}
 tr.row{border-bottom:1px solid var(--rule)}
 td{padding:9px 4px;vertical-align:top}
 .tdnum{width:30px;font-family:var(--serif);font-size:12px;color:var(--faint);text-align:right;padding-right:8px}
-.word{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:-.2px}
+.word{font-family:var(--serif);font-size:calc(17px * var(--fs));font-weight:700;letter-spacing:-.2px}
 .pos{font-family:var(--sans);font-size:10.5px;color:var(--red);font-weight:600;margin-left:5px}
-.chunk{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink3);margin-top:4px}
+.chunk{font-family:var(--serif);font-style:italic;font-size:calc(13.5px * var(--fs));color:var(--ink3);margin-top:4px}
 .chunk u{text-decoration-thickness:1.5px;text-underline-offset:3px;font-weight:700;font-style:normal;
   color:var(--red)}
 .axe u{font-weight:700;text-decoration-thickness:1.5px;text-underline-offset:3px;color:var(--red)}
@@ -102,8 +103,8 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .csrc{text-align:center;font-size:10.5px;color:var(--graphite);margin:-10px 0 14px}
 .src .tg{color:var(--red);font-weight:700}
 .mask{margin-top:3px;position:relative;display:inline-block;max-width:100%}
-.mean{font-size:13.5px}
-.tr{font-size:12.5px;color:var(--ink2)}
+.mean{font-size:calc(13.5px * var(--fs))}
+.tr{font-size:calc(12.5px * var(--fs));color:var(--ink2)}
 .mask.hide{color:transparent;background:var(--redsoft);box-shadow:0 0 0 3px var(--redsoft);
   cursor:pointer;border-radius:1px}
 .mask.hide::after{content:"가림판";position:absolute;inset:0;display:flex;align-items:center;
@@ -123,14 +124,14 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
   font-size:11px;padding:3px 9px}
 .card .tag{position:absolute;top:6px;right:44px;font-size:11px;color:var(--red);font-weight:700}
 .card .star{position:absolute;top:2px;right:10px;font-size:23px}
-.card .cw{font-family:var(--serif);font-size:34px;font-weight:700;text-align:center;
+.card .cw{font-family:var(--serif);font-size:calc(34px * var(--fs));font-weight:700;text-align:center;
   margin:26px 0 4px;letter-spacing:-.5px;word-break:break-word}
 .card .cp{text-align:center;font-size:12px;color:var(--red);font-weight:600}
 .card .cc{font-family:var(--serif);font-style:italic;text-align:center;color:var(--ink3);
-  margin:16px 0 6px;font-size:16px}
+  margin:16px 0 6px;font-size:calc(16px * var(--fs))}
 .card .cc u{text-decoration-thickness:1.5px;text-underline-offset:3px;font-weight:700;font-style:normal;
   color:var(--red)}
-.card .ct{text-align:center;font-size:13px;color:var(--ink2);margin-bottom:16px;min-height:19px}
+.card .ct{text-align:center;font-size:calc(13px * var(--fs));color:var(--ink2);margin-bottom:16px;min-height:19px}
 .card .cm{text-align:center;font-size:19px;min-height:30px;padding:10px 0;
   border-top:1px dashed var(--rule)}
 .card .cm.hide,.card .ct.hide{color:transparent;background:var(--redsoft);border-radius:1px}
@@ -163,7 +164,7 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .tbar{height:6px;background:var(--rule);margin:2px 0 4px;overflow:hidden}
 .tbar i{display:block;height:100%;width:100%;background:var(--red);transition:width .06s linear}
 .tnum{text-align:right;font-family:var(--serif);font-size:12px;color:var(--red);margin-bottom:6px}
-.opt{display:block;width:100%;text-align:left;font:inherit;font-size:14px;padding:11px 12px;
+.opt{display:block;width:100%;text-align:left;font:inherit;font-size:calc(14px * var(--fs));padding:11px 12px;
   margin-top:7px;border:1px solid var(--rule);background:var(--card);cursor:pointer}
 .opt .n{font-family:var(--serif);color:var(--graphite);margin-right:8px}
 .opt.right{border-color:var(--ink);background:var(--yellow)}
@@ -201,7 +202,7 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .tpick span{display:block;font-size:11.5px;font-weight:400;color:var(--graphite);margin-top:3px}
 .tpick:active{background:var(--press)}
 .czq{border:1px solid var(--rule);background:var(--card);padding:16px 14px;margin:12px 0}
-.czs{font-family:var(--serif);font-size:16px;line-height:2.1}
+.czs{font-family:var(--serif);font-size:calc(16px * var(--fs));line-height:2.1}
 .czb{display:inline-flex;gap:3px;margin:0 3px;vertical-align:baseline}
 .czo{font:inherit;font-family:var(--sans);font-size:12.5px;padding:3px 8px;
   border:1px solid var(--rule);background:var(--card);color:var(--ink);cursor:pointer;
@@ -217,12 +218,12 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .czlab{font-family:var(--serif);font-size:13px;font-weight:700;color:var(--red);margin-bottom:5px}
 .czstack .czo{display:block;width:100%;text-align:left;font-size:13.5px;
   padding:10px 12px;margin-top:6px;border-radius:0}
-.czt{font-size:12.5px;color:var(--graphite);margin-top:12px;line-height:1.6}
-.czn{font-size:12.5px;margin-top:6px;padding-left:9px;border-left:3px solid var(--red);
+.czt{font-size:calc(12.5px * var(--fs));color:var(--graphite);margin-top:12px;line-height:1.6}
+.czn{font-size:calc(12.5px * var(--fs));margin-top:6px;padding-left:9px;border-left:3px solid var(--red);
   color:var(--ink3);line-height:1.6}
 .pcard{border:1px solid var(--rule);background:var(--card);padding:14px 14px 10px;margin:14px 0}
 .phead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.pw{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:-.5px}
+.pw{font-family:var(--serif);font-size:calc(26px * var(--fs));font-weight:700;letter-spacing:-.5px}
 .pcore{font-size:13px;color:var(--red);font-weight:700}
 svg.pv{display:block;width:100%;max-width:280px;height:72px;margin:10px auto 6px}
 svg.pv .l{stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
@@ -231,7 +232,7 @@ svg.pv .rf{fill:var(--red);stroke:none}
 svg.pv .g{stroke:var(--guide);fill:none;stroke-width:1.5}
 svg.pv .box{fill:none;stroke:var(--ink);stroke-width:2}
 svg.pv .dash{stroke-dasharray:4 4}
-.pfeel{font-size:12.5px;color:var(--ink2);line-height:1.7;margin:4px 0 10px}
+.pfeel{font-size:calc(12.5px * var(--fs));color:var(--ink2);line-height:1.7;margin:4px 0 10px}
 .pgrp{margin-top:10px}
 .plabel{font-size:11.5px;color:var(--red);font-weight:700;border-bottom:1px solid var(--rule);
   padding-bottom:3px;margin-bottom:5px}
@@ -255,16 +256,16 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 .grp .gd{font-size:12.5px;color:var(--graphite);margin:0 0 6px;padding-left:13px;line-height:1.6}
 .ax{border-bottom:1px solid var(--rule);padding:8px 2px}
 .axh{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.exp{font-family:var(--serif);font-size:16px;font-weight:700}
+.exp{font-family:var(--serif);font-size:calc(16px * var(--fs));font-weight:700}
 .hit{font-size:10.5px;color:var(--red);font-weight:700;white-space:nowrap}
 .new{font-size:10.5px;color:var(--faint);white-space:nowrap}
 .axm{font-size:13.5px}
 .grp h3 .cnt{font-size:12px;color:var(--graphite);font-weight:400;margin-left:4px}
 .badges{white-space:nowrap}
 .badges .new{margin-left:5px}
-.axe{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink3);margin-top:5px}
+.axe{font-family:var(--serif);font-style:italic;font-size:calc(13.5px * var(--fs));color:var(--ink3);margin-top:5px}
 .axt{font-size:12.5px;color:var(--ink2)}
-.axn{font-size:12px;color:var(--graphite);margin-top:3px;line-height:1.55}
+.axn{font-size:calc(12px * var(--fs));color:var(--graphite);margin-top:3px;line-height:1.55}
 .poly{border-top:1px solid var(--rule);padding:12px 2px}
 .poly h3{font-family:var(--serif);font-size:19px;margin:0 0 4px}
 .poly .pm{font-size:13.5px}
@@ -283,6 +284,14 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 .recpanel{display:none;gap:18px;justify-content:center;padding:8px 0 2px;
   border-top:1px dotted var(--rule);margin-top:6px}
 .recpanel.on{display:flex}
+/* 새 버전 알림 — 푸터 바로 위에 한 줄 */
+.updbar{position:fixed;left:0;right:0;bottom:calc(52px + env(safe-area-inset-bottom));
+  z-index:5;background:var(--ink);color:var(--paper);font-size:12.5px;
+  padding:9px 14px;display:flex;gap:10px;align-items:center;justify-content:center}
+.updbar button{font:inherit;font-size:12.5px;font-weight:700;padding:3px 10px;
+  border:1px solid var(--paper);background:transparent;color:var(--paper);cursor:pointer}
+.swhint{display:block;margin-top:5px;font-size:10.5px;color:var(--faint)}
+#panel .card{transition:transform .12s ease-out, opacity .12s ease-out}
 .miss{font-size:10.5px;color:var(--red);font-weight:700;margin-left:5px;vertical-align:1px}
 .bestx{font-size:11px;font-weight:400;color:var(--graphite);margin-left:6px;white-space:nowrap}
 .bestx b{color:var(--ink)}
@@ -321,7 +330,7 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:520px){
-  .src{font-size:11px}.word{font-size:16px}.chunk{font-size:12.5px}.tr{font-size:11.5px}
+  .src{font-size:calc(11px * var(--fs))}.word{font-size:calc(16px * var(--fs))}.chunk{font-size:calc(12.5px * var(--fs))}.tr{font-size:calc(11.5px * var(--fs))}
   .tdnum{display:none}.omr{width:88px}
   .qs-wrap{grid-template-columns:1fr}
   .ansgrid{grid-template-columns:repeat(2,1fr)}
@@ -357,6 +366,7 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
   <button class="reset" id="expBtn">내보내기</button>
   <button class="reset" id="impBtn">가져오기</button>
   <button class="reset" id="reset">초기화</button>
+  <button class="reset" id="fsBtn">글자 크기</button>
 </div></div>
 
 <script>
@@ -365,6 +375,7 @@ const ITEMS = DB.items;
 const KEY = 'suneung-vocab-v2';
 const K = it => it.w.toLowerCase();
 let prog = {}, star = {};
+let fsStep = 1;    // 글자 크기 0=작게 1=보통 2=크게
 let miss = {};     // 단어별 오답 누적 횟수 — 세션이 끝나도 남는다
 let best = {};     // 부록 시험 최고 점수 {그룹키|파트: {r:맞은수, t:전체, at:날짜}}
 let state = {mode:'list', exam:'전체', area:'전체', only:'전체', apx:'전체', day:0, tag:null, q:'', reveal:false};
@@ -391,7 +402,7 @@ let saveT = null;
 function save(){
   clearTimeout(saveT);
   saveT = setTimeout(()=>{
-    store.set(KEY, JSON.stringify({p:prog, s:star, m:miss, b:best}));
+    store.set(KEY, JSON.stringify({p:prog, s:star, m:miss, b:best, f:fsStep, ta:atOn}));
   }, 400);
 }
 async function load(){
@@ -400,7 +411,9 @@ async function load(){
     if(v){
       const d = JSON.parse(v);
       if(d && d.p){ prog = d.p||{}; star = d.s||{};
-                    miss = d.m||{}; best = d.b||{}; }   // m·b는 나중에 생긴 칸
+                    miss = d.m||{}; best = d.b||{};      // m·b는 나중에 생긴 칸
+                    if(d.f !== undefined) fsStep = +d.f || 0;
+                    if(d.ta !== undefined) atOn = !!d.ta; }
       else { prog = d||{}; }        // 예전 저장본 이어받기
     }
   }catch(e){ prog = {}; star = {}; }
@@ -620,7 +633,8 @@ function viewCard(list){
            <button class="solid" data-card="know">외웠어요</button>`
         : `<button class="solid" data-card="flip" style="flex:1">뜻·해석 확인</button>`}
     </div>
-    <div class="cstat">Day ${it.d} · 현재 ${lv}회독${star[K(it)]?' · ★ 별표':''}</div>
+    <div class="cstat">Day ${it.d} · 현재 ${lv}회독${star[K(it)]?' · ★ 별표':''}
+      <span class="swhint">← 밀면 모르겠어요 · 외웠어요 밀면 →</span></div>
   </div>`;
 }
 
@@ -997,18 +1011,44 @@ function atGroup(){
 function atStart(part, qs){
   at.part = part; at.qs = qs; at.i = 0; at.right = 0; at.wrong = [];
   at.picks = {}; at.done = false; at.start = Date.now();
+  atTick();
+}
+/* 부록 시험 타임어택 — 시간이 다 되면 그 문항은 틀린 것으로 넘어간다.
+   빈칸이 여러 개인 문항은 넉넉히 준다. */
+let atT = null, atLimit = 0, atOn = false, atStartAt = 0;
+function atStop(){ if(atT){ clearInterval(atT); atT = null; } }
+function atTick(){
+  atStop();
+  if(!atOn || !at || at.part === 'menu' || at.done || atDone()) return;
+  const q = atQ(); if(!q) return;
+  atLimit = (at.part === 'word' ? 8000 : 12000) * (q.b ? q.b.length : 1);
+  atStartAt = Date.now();
+  atT = setInterval(()=>{
+    const left = atLimit - (Date.now() - atStartAt);
+    const fill = document.getElementById('atfill'), num = document.getElementById('atnum');
+    if(fill) fill.style.width = Math.max(0, left/atLimit*100) + '%';
+    if(num)  num.textContent = (Math.max(0, left)/1000).toFixed(0);
+    if(left <= 0){ atStop(); atTimeUp(); }
+  }, 100);
+}
+function atTimeUp(){
+  if(!at || at.done) return;
+  at.done = true;
+  at.wrong.push(at.i);
+  render();
 }
 function atQ(){ return at.qs[at.i]; }
 function atDone(){ return at.i >= at.qs.length; }
 function atGradeCz(){                     // 빈칸을 다 고르면 채점
   const q = atQ();
   if(q.b.some((b,k)=>at.picks[k] === undefined)) return;
-  at.done = true;
+  at.done = true; atStop();
   const ok = q.b.every((b,k)=>at.picks[k] === b.a);
   if(ok) at.right++; else at.wrong.push(at.i);
 }
 function atNext(){
   at.i++; at.picks = {}; at.done = false;
+  atTick();
   if(atDone() && at.qs.length){          // 한 바퀴 끝 — 최고 기록만 남긴다
     const k = atKey(atGroup(), at.part), b = best[k];
     const now = { r: at.right, t: at.qs.length, at: new Date().toISOString().slice(0,10) };
@@ -1028,7 +1068,8 @@ function flash(id, msg, cls){
 }
 function exportProgress(){
   const data = { tag: BACKUP_TAG, v: 2, at: new Date().toISOString(),
-                 items: ITEMS.length, p: prog, s: star, m: miss, b: best };
+                 items: ITEMS.length, p: prog, s: star, m: miss, b: best,
+                 f: fsStep, ta: atOn };
   // 파일 이름에 한글을 쓰면 크롬이 통째로 버리고 'download'로 저장한다. ASCII로 둔다.
   const name = 'voca-progress-' + new Date().toISOString().slice(0,10) + '.json';
   try{
@@ -1051,10 +1092,16 @@ function importProgress(text){
   Object.keys(d.s).forEach(k=>{ if(d.s[k]) star[k] = 1; });
   Object.keys(d.m||{}).forEach(k=>{ const v = +d.m[k]; if(v > 0) miss[k] = v; });
   Object.keys(d.b||{}).forEach(k=>{ const v = d.b[k]; if(v && v.t) best[k] = v; });
+  if(d.f !== undefined){ fsStep = Math.min(2, Math.max(0, +d.f || 0)); applyFs(); }
+  if(d.ta !== undefined) atOn = !!d.ta;
   save(); ses = null; quizQ = null; at = null; render();
   flash('impBtn', n + '개 되살림');
 }
 let resetArm = 0, resetT = null;
+const FS = [0.9, 1, 1.15];
+function applyFs(){
+  try{ document.documentElement.style.setProperty('--fs', FS[fsStep] || 1); }catch(e){}
+}
 function resetLabel(state){
   const b = document.getElementById('reset');
   if(!b) return;
@@ -1164,6 +1211,8 @@ function viewATest(){
     return atBack() + `<div class="tmenu">
       <h2>${esc(g.t)}</h2>
       <p>${g.r.length}개 표현 · 두 파트로 나눠 풉니다.${bestText(g) ? ' ' + bestText(g) : ''}</p>
+      <div class="controls"><button class="chip" id="atTimer" aria-pressed="${atOn}">
+        ⏱ 타임어택 ${atOn?'켜짐':'꺼짐'}</button></div>
       ${nc ? `<button class="tpick" data-apart="concept">개념 시험
           <span>${czLabel(g)} · ${nc}문항</span></button>`
            : (g.f === 'conn'
@@ -1180,7 +1229,9 @@ function viewATest(){
 }
 function atProg(){
   return `<div class="sprog">${at.i+1} / ${at.qs.length} ${bar(at.i, at.qs.length)}
-    <span class="sright">맞음 ${at.right} · 틀림 ${at.wrong.length}</span></div>`;
+    <span class="sright">맞음 ${at.right} · 틀림 ${at.wrong.length}</span></div>`
+   + (atOn && !at.done ? `<div class="tbar"><i id="atfill"></i></div>
+      <div class="tnum"><span id="atnum">${Math.round(atLimit/1000)}</span>초</div>` : '');
 }
 function czStacked(q){
   // 보기가 많거나 길면 문장 안에 끼워 넣을 수 없다. 시험지처럼 아래에 세로로 늘어놓는다.
@@ -1429,7 +1480,7 @@ document.addEventListener('click', e=>{
   const t = e.target.closest('button, [data-peek], [data-acc]');
   if(!t) return;
 
-  if(t.dataset.mode){ state.mode = t.dataset.mode; at = null;
+  if(t.dataset.mode){ state.mode = t.dataset.mode; atStop(); at = null;
     document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed', b===t));
     render(); return; }
   if(t.dataset.f){ state[t.dataset.f] = t.dataset.v; ses=null; quizQ=null; render(); return; }
@@ -1442,7 +1493,7 @@ document.addEventListener('click', e=>{
     atStart(t.dataset.apart,
             t.dataset.apart === 'concept' ? czOf(atGroup()) : wqOf(atGroup()));
     render(); return; }
-  if(t.dataset.aback){ at = null; render(); return; }
+  if(t.dataset.aback){ atStop(); at = null; render(); return; }
   if(t.dataset.cz){                         // 개념 시험 — 빈칸 하나 고르기
     if(at.done) return;
     const [bi, k] = t.dataset.cz.split('.').map(Number);
@@ -1450,7 +1501,7 @@ document.addEventListener('click', e=>{
   if(t.dataset.aopt !== undefined){         // 단어 시험 — 보기 고르기
     if(at.done) return;
     const k = +t.dataset.aopt, q = atQ();
-    at.picks[0] = k; at.done = true;
+    at.picks[0] = k; at.done = true; atStop();
     if(k === q.a) at.right++; else at.wrong.push(at.i);
     render(); return; }
   if(t.dataset.anext){ atNext(); render(); return; }
@@ -1533,6 +1584,13 @@ document.addEventListener('click', e=>{
     if(pane){ const on = pane.classList.toggle('on'); t.setAttribute('aria-expanded', on); }
     return;
   }
+  if(t.id==='updBtn'){ location.reload(); return; }
+  if(t.id==='fsBtn'){                      // 작게 → 보통 → 크게 순환
+    fsStep = (fsStep + 1) % FS.length; applyFs(); save();
+    flash('fsBtn', ['작게','보통','크게'][fsStep]);
+    return;
+  }
+  if(t.id==='atTimer'){ atOn = !atOn; save(); atTick(); render(); return; }
   if(t.id==='expBtn'){ exportProgress(); return; }
   if(t.id==='impBtn'){ const f = document.getElementById('impFile'); if(f){ f.value=''; f.click(); } return; }
   if(t.id==='reset'){
@@ -1589,7 +1647,68 @@ document.addEventListener('input', e=>{
 
 window.addEventListener('afterprint', sheetClearPrint);
 
-load().then(render);
+load().then(()=>{ applyFs(); render(); });
+
+/* 카드 좌우 스와이프.
+   왼쪽으로 밀면 「모르겠어요」, 오른쪽으로 밀면 「외웠어요」. 뜻을 아직 안 봤으면
+   어느 쪽으로 밀든 먼저 뒤집는다. 세로로 스크롤하는 손짓과 섞이지 않게
+   가로 이동이 세로보다 확실히 클 때만 스와이프로 본다. */
+let swX = 0, swY = 0, swOn = false;
+function cardEl(){ return document.querySelector('#panel .card'); }
+function swipeReset(el){ if(el){ el.style.transform = ''; el.style.opacity = ''; } }
+document.addEventListener('touchstart', e=>{
+  if(state.mode !== 'card' || !ses || sesDone() || e.touches.length !== 1) return;
+  if(!cardEl() || !cardEl().contains(e.target)) return;
+  swX = e.touches[0].clientX; swY = e.touches[0].clientY; swOn = true;
+}, {passive:true});
+document.addEventListener('touchmove', e=>{
+  if(!swOn) return;
+  const dx = e.touches[0].clientX - swX, dy = e.touches[0].clientY - swY;
+  if(Math.abs(dy) > Math.abs(dx)){ swOn = false; swipeReset(cardEl()); return; }
+  const el = cardEl();
+  if(el){ el.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx/40) + 'deg)';
+          el.style.opacity = String(Math.max(.45, 1 - Math.abs(dx)/420)); }
+}, {passive:true});
+document.addEventListener('touchend', e=>{
+  if(!swOn) return;
+  swOn = false;
+  const el = cardEl();
+  const dx = (e.changedTouches[0] || {}).clientX - swX;
+  swipeReset(el);
+  if(!(Math.abs(dx) > 70)) return;            // 살짝 스친 것은 무시한다
+  if(!shown){ shown = true; render(); return; }
+  const it = ITEMS[ses.ids[ses.i]];
+  if(dx > 0){ prog[K(it)] = Math.min(3,(prog[K(it)]||0)+1); ses.right++; }
+  else { prog[K(it)] = 0; miss[K(it)] = (miss[K(it)]||0) + 1; ses.wrong.push(it.i); }
+  save(); sesAdvance(); render();
+}, {passive:true});
+
+/* 새 버전 알림.
+   서비스 워커는 네트워크 우선이라 새로고침하면 새 파일을 받는다. 문제는 홈 화면 앱을
+   띄워 둔 채 며칠 쓰는 경우다. 그동안 배포가 되어도 화면은 옛 파일 그대로다.
+   바뀌는 것은 index.html이지 sw.js가 아니므로 워커 갱신으로는 잡히지 않는다.
+   그래서 index.html의 ETag를 직접 본다. HEAD 요청이라 본문은 받지 않는다. */
+let verTag = null;
+function showUpdate(){
+  if(document.getElementById('updBar')) return;
+  const bar = document.createElement('div');
+  bar.id = 'updBar'; bar.className = 'updbar';
+  bar.innerHTML = '새 내용이 있습니다 <button id="updBtn">새로고침</button>';
+  document.body.appendChild(bar);
+}
+async function checkUpdate(){
+  if(!location.protocol.startsWith('http')) return;
+  try{
+    const r = await fetch('index.html', { method:'HEAD', cache:'no-store' });
+    const tag = r.headers.get('etag') || r.headers.get('last-modified');
+    if(!tag) return;
+    if(verTag === null){ verTag = tag; return; }   // 처음 본 값이 기준이 된다
+    if(tag !== verTag) showUpdate();
+  }catch(e){}                                      // 오프라인이면 조용히 넘어간다
+}
+checkUpdate();
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkUpdate(); });
+setInterval(checkUpdate, 30 * 60 * 1000);
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
