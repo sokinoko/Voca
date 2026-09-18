@@ -1,4 +1,6 @@
 const { chromium } = require('playwright');
+// 스크린샷은 저장소에 남기지 않는다
+const SHOT = n => require('path').join(require('os').tmpdir(), 'voca-' + n);
 const path = require('path');
 const APP = 'file://' + path.join(__dirname, '..', '..', 'index.html');   // 저장소의 index.html
 
@@ -23,7 +25,7 @@ const ratio = (a,b) => { const [x,y]=[lum(a),lum(b)].sort((p,q)=>q-p); return (x
     ok(`${scheme}: 표제어 대비비 4.5 이상`, ratio(c.word,c.bg)>=4.5, ratio(c.word,c.bg).toFixed(2));
     ok(`${scheme}: 출처 글씨 대비비 3 이상`, ratio(c.src,c.bg)>=3, ratio(c.src,c.bg).toFixed(2));
     ok(`${scheme}: 가림판이 배경과 구분된다`, ratio(c.mask,c.bg)>=1.1, ratio(c.mask,c.bg).toFixed(2));
-    await p.screenshot({path:`theme-${scheme}.png`});
+    await p.screenshot({path: SHOT(`theme-${scheme}.png`)});
     // 인쇄는 언제나 밝게
     await p.emulateMedia({media:'print'});
     const pr = await p.evaluate(()=>getComputedStyle(document.body).backgroundColor);
