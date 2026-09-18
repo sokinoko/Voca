@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+"""뱅크 A — 준동사 심화. 부록 19에 덧붙인다.
+(문장, 해석, [(보기, 정답인덱스)], 해설)  · {0} {1} 이 빈칸"""
+A = [
+# ── 수동 준동사 ──
+("Everyone wants {0} for what they actually did.","누구나 자기가 실제로 한 일로 인정받고 싶어 한다.",
+ [(["to be recognized","to recognize"],0)],"주어가 '인정받는' 쪽이므로 to be p.p."),
+("She avoided {0} while leaving the building.","그녀는 건물을 나서면서 눈에 띄는 것을 피했다.",
+ [(["being seen","seeing","to be seen"],0)],"avoid는 동명사만 받고, 주어가 '보이는' 쪽이라 being p.p."),
+("The report needs {0} before the meeting.","보고서는 회의 전에 검토되어야 한다.",
+ [(["reviewing","to review","reviewed"],0)],"주어가 사물이면 need ~ing가 수동 뜻이다. need to be reviewed와 같다."),
+("These claims deserve {0} carefully.","이 주장들은 신중히 검토될 만하다.",
+ [(["to be examined","to examine"],0)],"deserve 뒤 주어가 '검토되는' 쪽이면 to be p.p."),
+("He is proud of {0} to lead the team.","그는 팀을 이끌도록 뽑힌 것을 자랑스러워한다.",
+ [(["having been chosen","having chosen"],0)],"전치사 of + 동명사, 게다가 '뽑힌' 쪽이라 수동."),
+("The children were made {0} until the rain stopped.","아이들은 비가 그칠 때까지 기다려야 했다.",
+ [(["to wait","wait"],0)],"사역동사 make는 능동일 때 원형, 수동태가 되면 to가 살아난다."),
+("The suspect was seen {0} the building at midnight.","용의자가 자정에 건물에 들어가는 것이 목격됐다.",
+ [(["to enter","enter"],0)],"지각동사도 수동태가 되면 원형이 to부정사로 바뀐다."),
+# ── 완료 준동사 ──
+("The author claims {0} the manuscript years earlier.","그 저자는 원고를 몇 년 전에 완성했다고 주장한다.",
+ [(["to have finished","to finish"],0)],"주장하는 시점보다 앞선 일이면 to have p.p."),
+("She regrets {0} so harshly at the meeting.","그녀는 회의에서 그렇게 모질게 말한 것을 후회한다.",
+ [(["having spoken","to speak"],0)],"후회는 이미 한 일. 앞선 일임을 분명히 하려면 having p.p."),
+("He seems {0} the instructions completely.","그는 지시를 완전히 잊어버린 것 같다.",
+ [(["to have forgotten","to forget"],0)],"seem 시점보다 먼저 일어난 일이라 완료부정사."),
+# ── 의미상 주어 ──
+("It was careless {0} the door unlocked.","문을 잠그지 않고 두다니 부주의했다.",
+ [(["of you to leave","for you to leave"],0)],"사람의 성품을 평가하는 형용사(careless)는 of를 쓴다."),
+("It is difficult {0} the deadline by Friday.","금요일까지 마감을 맞추기는 어렵다.",
+ [(["for us to meet","of us to meet"],0)],"난이도를 말하는 형용사는 for. 성품 평가가 아니다."),
+("I don't mind {0} the room with someone else.","나는 누군가와 방을 함께 쓰는 것을 꺼리지 않는다.",
+ [(["sharing","to share"],0)],"mind는 동명사만. 남이 쓰게 할 땐 his sharing처럼 소유격을 앞에 붙인다."),
+# ── 부정 ──
+("She decided {0} the offer after all.","그녀는 결국 그 제안을 받지 않기로 했다.",
+ [(["not to accept","to not accept"],0)],"to부정사의 부정은 not을 to 앞에 둔다."),
+("He apologized for {0} earlier.","그는 더 일찍 전화하지 않은 것을 사과했다.",
+ [(["not calling","not to call"],0)],"전치사 뒤는 동명사, 부정은 그 앞에 not."),
+# ── 대부정사 ──
+("You may leave early if you want {0}.","일찍 가고 싶으면 그래도 된다.",
+ [(["to","to do","doing"],0)],"앞에 나온 leave early의 반복을 피해 to만 남긴다. 대부정사."),
+("I didn't join the club, though I had hoped {0}.","나는 그 동아리에 들지 않았다, 그러길 바랐지만.",
+ [(["to","to do so joining"],0)],"had hoped to join의 join을 생략한 대부정사."),
+# ── 주어·보어 자리 ──
+("{0} a new language as an adult takes patience.","어른이 되어 새 언어를 배우는 데는 인내가 필요하다.",
+ [(["Learning","Learn"],0)],"주어 자리에는 동사원형이 올 수 없다. 동명사나 to부정사."),
+("{0} is important to check the source of a claim.","주장의 출처를 확인하는 것이 중요하다.",
+ [(["It","That","Checking"],0)],"뒤에 to부정사 진주어가 있으므로 가주어 It."),
+("His goal is {0} the results before the term ends.","그의 목표는 학기가 끝나기 전에 결과를 발표하는 것이다.",
+ [(["to publish","publish"],0)],"be동사 뒤 보어 자리에도 준동사가 온다."),
+# ── too ~ to / enough to ──
+("The instructions were {0} for beginners to follow.","그 설명은 초보자가 따라 하기엔 너무 복잡했다.",
+ [(["too complicated","complicated enough"],0)],"too ~ to V는 '너무 …해서 ~할 수 없다'."),
+("She was experienced {0} the problem on her own.","그녀는 혼자서 그 문제를 다룰 만큼 경험이 많았다.",
+ [(["enough to handle","enough handling"],0)],"enough는 형용사 뒤에 오고 뒤에는 to부정사."),
+# ── 병렬 ──
+("He promised to review the draft and {0} it by Monday.","그는 초고를 검토하고 월요일까지 돌려주기로 약속했다.",
+ [(["return","returning","returned"],0)],"to review와 병렬이므로 to가 생략된 원형."),
+("Reading widely and {0} carefully improve writing alike.","폭넓게 읽는 것과 꼼꼼히 관찰하는 것 모두 글쓰기를 낫게 한다.",
+ [(["observing","to observe"],0)],"앞의 Reading과 형태를 맞춘다. 병렬은 같은 모양으로."),
+# ── 동명사 vs 현재분사 ──
+("He bought a {0} bag for the camping trip.","그는 캠핑용으로 침낭을 샀다.",
+ [(["sleeping","slept"],0)],"'잠자는 가방'이 아니라 '잠자기 위한 가방'. 용도를 말하는 동명사다."),
+("The baby {0} on the sofa is my nephew.","소파에서 자고 있는 아기가 내 조카다.",
+ [(["sleeping","to sleep"],0)],"앞 명사를 꾸미며 '~하고 있는'이면 현재분사."),
+# ── 전치사 to 심화 ──
+("New employees must get accustomed to {0} in teams.","신입 사원은 팀으로 일하는 데 익숙해져야 한다.",
+ [(["working","work"],0)],"be/get accustomed to의 to는 전치사."),
+("The schedule is subject to {0} without notice.","일정은 예고 없이 변경될 수 있다.",
+ [(["change","changing","changed"],0)],"be subject to 뒤에는 명사. change는 명사로도 쓰인다."),
+("She has devoted her career to {0} rare diseases.","그녀는 희귀 질환을 연구하는 데 경력을 바쳐 왔다.",
+ [(["studying","study"],0)],"devote A to B의 to도 전치사."),
+("They are looking forward to {0} the results next week.","그들은 다음 주에 결과를 보게 되기를 기대하고 있다.",
+ [(["seeing","see"],0)],"look forward to + 동명사. 가장 자주 틀리는 자리."),
+# ── 그 밖에 자주 갈리는 자리 ──
+("I would rather {0} at home tonight.","오늘 밤은 차라리 집에 있겠다.",
+ [(["stay","to stay","staying"],0)],"would rather 뒤는 원형."),
+("He had no choice but {0} the terms.","그는 그 조건을 받아들일 수밖에 없었다.",
+ [(["to accept","accepting"],0)],"have no choice but + to V. cannot help ~ing와 뜻은 같지만 형태가 다르다."),
+("It is no use {0} over spilled milk.","엎질러진 우유를 두고 울어 봐야 소용없다.",
+ [(["crying","to cry"],0)],"it is no use ~ing."),
+("The house is worth {0} despite its age.","그 집은 오래됐어도 살 만한 가치가 있다.",
+ [(["buying","to buy","being bought"],0)],"be worth ~ing는 형태는 능동이지만 뜻은 수동이다."),
+("Please remember {0} the attachment this time.","이번에는 첨부 파일 넣는 것을 잊지 마세요.",
+ [(["to include","including"],0)],"앞으로 할 일이므로 to부정사."),
+("Do you happen to remember {0} the file last night?","혹시 어젯밤에 그 파일을 보낸 것 기억나?",
+ [(["sending","to send"],0)],"이미 한 일이므로 동명사. 바로 위 문장과 시점이 반대다."),
+]
