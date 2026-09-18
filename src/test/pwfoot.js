@@ -1,4 +1,6 @@
 const { chromium } = require('playwright');
+// 스크린샷은 저장소에 남기지 않는다
+const SHOT = n => require('path').join(require('os').tmpdir(), 'voca-' + n);
 const path = require('path');
 const APP = 'file://' + path.join(__dirname, '..', '..', 'index.html');   // 저장소의 index.html
 
@@ -15,10 +17,10 @@ let fails=0; const ok=(n,c,x)=>{console.log((c?'  통과  ':'  실패  ')+n+(x?'
      recBox.x >= navBox.x + navBox.width - 1, `nav끝 ${Math.round(navBox.x+navBox.width)} / 기록 ${Math.round(recBox.x)}`);
   ok('탭 6개가 모두 보인다', (await p.locator('.foot .seg button').count())===6
      && (await p.locator('.foot .seg button').last().isVisible()));
-  await p.screenshot({path:'foot-closed.png'});
+  await p.screenshot({path: SHOT('foot-closed.png')});
   await p.click('#recBtn'); await p.waitForTimeout(250);
   ok('누르면 펼쳐진다', await p.locator('#expBtn').isVisible());
-  await p.screenshot({path:'foot-open.png'});
+  await p.screenshot({path: SHOT('foot-open.png')});
   await p.click('#recBtn'); await p.waitForTimeout(250);
   ok('다시 누르면 접힌다', !(await p.locator('#expBtn').isVisible()));
   // 가로 넘침 없는지
