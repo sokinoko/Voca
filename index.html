@@ -259,6 +259,9 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 .reset.arm{color:var(--red);font-weight:700}
 .reset.done{color:#1a7f4b;font-weight:700;text-decoration:none}
 .fbtns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.miss{font-size:10.5px;color:var(--red);font-weight:700;margin-left:5px;vertical-align:1px}
+.bestx{font-size:11px;font-weight:400;color:var(--graphite);margin-left:6px;white-space:nowrap}
+.bestx b{color:var(--ink)}
 .sheet{margin-top:10px}
 .sh{border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:10px}
 .sht{font-family:var(--serif);font-size:19px;font-weight:700}
@@ -333,6 +336,8 @@ const ITEMS = DB.items;
 const KEY = 'suneung-vocab-v2';
 const K = it => it.w.toLowerCase();
 let prog = {}, star = {};
+let miss = {};     // 단어별 오답 누적 횟수 — 세션이 끝나도 남는다
+let best = {};     // 부록 시험 최고 점수 {그룹키|파트: {r:맞은수, t:전체, at:날짜}}
 let state = {mode:'list', exam:'전체', area:'전체', only:'전체', apx:'전체', day:0, tag:null, q:'', reveal:false};
 let shown = false, quizQ = null, answered = false, picked = null;
 let timeLimit = 4000, timerOn = true, tId = null, tStart = 0;
@@ -356,14 +361,17 @@ const store = {
 let saveT = null;
 function save(){
   clearTimeout(saveT);
-  saveT = setTimeout(()=>{ store.set(KEY, JSON.stringify({p:prog, s:star})); }, 400);
+  saveT = setTimeout(()=>{
+    store.set(KEY, JSON.stringify({p:prog, s:star, m:miss, b:best}));
+  }, 400);
 }
 async function load(){
   try{
     const v = await store.get(KEY);
     if(v){
       const d = JSON.parse(v);
-      if(d && d.p){ prog = d.p||{}; star = d.s||{}; }
+      if(d && d.p){ prog = d.p||{}; star = d.s||{};
+                    miss = d.m||{}; best = d.b||{}; }   // m·b는 나중에 생긴 칸
       else { prog = d||{}; }        // 예전 저장본 이어받기
     }
   }catch(e){ prog = {}; star = {}; }
@@ -372,7 +380,7 @@ async function load(){
 const TAGS = ['핵심','필수','추가','선지','듣기표현','다의어','고빈출','문형','어법','부록','구동사','연결사','전치사동사','혼동어휘','뉘앙스','부정어구','준동사'];
 function filtered(){
   const q = state.q.trim().toLowerCase();
-  return ITEMS.filter(it=>{
+  const out = ITEMS.filter(it=>{
     if(state.day && it.d!==state.day) return false;
     if(state.exam!=='전체' && !it.es.includes(state.exam)) return false;
     if(state.area!=='전체' && !it.as.includes(state.area)) return false;
@@ -380,10 +388,14 @@ function filtered(){
     if(state.only==='미암기' && (prog[K(it)]||0)>=3) return false;
     if(state.only==='완료' && (prog[K(it)]||0)<3) return false;
     if(state.only==='★ 별표' && !star[K(it)]) return false;
+    if(state.only==='✗ 자주 틀림' && !miss[K(it)]) return false;
     if(q && !(it.w.toLowerCase().includes(q) || it.m.includes(q)
               || it.ex.some(e=>e.ch.toLowerCase().includes(q) || e.tr.includes(q)))) return false;
     return true;
   });
+  // 자주 틀린 것부터 보여 준다. 다른 필터에서는 원래 순서를 지킨다.
+  if(state.only==='✗ 자주 틀림') out.sort((a,b)=>(miss[K(b)]||0)-(miss[K(a)]||0));
+  return out;
 }
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function starBtn(it, cls){
@@ -428,7 +440,7 @@ function controls(extra){
     <input type="search" id="q" placeholder="단어·뜻·해석 검색" value="${esc(state.q)}">
   </div>
   <div class="controls">
-    ${seg('only',['전체','미암기','완료','★ 별표'])}
+    ${seg('only',['전체','미암기','완료','★ 별표','✗ 자주 틀림'])}
     ${state.mode==='quiz' ? `<button class="chip" id="timerToggle" aria-pressed="${timerOn}">
         ⏱ 타임어택 ${timerOn?'켜짐':'꺼짐'}</button>
       ${[3,4,6,10].map(n=>`<button class="chip" data-tsec="${n}"
@@ -461,8 +473,10 @@ function viewList(list){
     const lv = prog[K(it)]||0;
     const dots = [1,2,3].map(k=>`<button class="dot ${lv>=k?'on':''}" data-mark="${it.i}" data-lv="${k}"
        aria-label="${esc(it.w)} ${k}회독" title="${k}회독"></button>`).join('');
+    const mc = miss[K(it)]||0;
     return `<tr class="row"><td class="tdnum">${n+1}</td><td>
-      <span class="word">${esc(it.w)}</span><span class="pos">${esc(it.p)}</span>
+      <span class="word">${esc(it.w)}</span><span class="pos">${esc(it.p)}</span>${
+        mc ? `<span class="miss" title="틀린 횟수">✗${mc}</span>` : ''}
       <div class="mask mean ${h}" data-peek>${esc(it.m)}</div>
       ${it.ex.map(e=>`<div class="exwrap">
         <div class="chunk">${e.ch}</div>
@@ -511,7 +525,8 @@ function gradeQuiz(pick){
   answered = true; picked = pick;
   const it = quizQ.it;
   if(pick === it.i){ prog[K(it)] = Math.min(3,(prog[K(it)]||0)+1); ses.right++; }
-  else { prog[K(it)] = 0; star[K(it)] = 1; ses.wrong.push(it.i); }
+  else { prog[K(it)] = 0; star[K(it)] = 1; miss[K(it)] = (miss[K(it)]||0) + 1;
+         ses.wrong.push(it.i); }
   save(); render();
 }
 function sesDone(){ return ses.i >= ses.ids.length; }
@@ -911,6 +926,15 @@ function asGroup(){
   });
   return (synth.as = { t:'15. as 한 단어 완전정리', g:'', f:'as', r });
 }
+function atKey(g, part){ return (g.t || '') + '|' + part; }
+function bestOf(g, part){ return best[atKey(g, part)]; }
+function bestText(g){                      // 제목줄에 붙일 「최고 …」
+  const parts = [['concept','개념'], ['word','단어']]
+    .map(([k, label])=>{ const b = bestOf(g, k);
+      return b && b.t ? label + ' <b>' + Math.round(b.r / b.t * 100) + '%</b>' : null; })
+    .filter(Boolean);
+  return parts.length ? '<span class="bestx">최고 ' + parts.join(' · ') + '</span>' : '';
+}
 function atGroup(){
   if(at.src === 'gram') return gramGroup();
   if(at.src === 'prep') return prepGroup();
@@ -930,7 +954,14 @@ function atGradeCz(){                     // 빈칸을 다 고르면 채점
   const ok = q.b.every((b,k)=>at.picks[k] === b.a);
   if(ok) at.right++; else at.wrong.push(at.i);
 }
-function atNext(){ at.i++; at.picks = {}; at.done = false; }
+function atNext(){
+  at.i++; at.picks = {}; at.done = false;
+  if(atDone() && at.qs.length){          // 한 바퀴 끝 — 최고 기록만 남긴다
+    const k = atKey(atGroup(), at.part), b = best[k];
+    const now = { r: at.right, t: at.qs.length, at: new Date().toISOString().slice(0,10) };
+    if(!b || !b.t || (now.r / now.t) > (b.r / b.t)) { best[k] = now; save(); }
+  }
+}
 /* ── 학습 기록 백업 ──
    기록은 브라우저 저장소에만 있어서 사파리 데이터를 지우거나 폰을 바꾸면 사라진다.
    파일로 빼 두었다가 되돌릴 수 있게 한다. */
@@ -943,8 +974,8 @@ function flash(id, msg, cls){
   setTimeout(()=>{ b.textContent = keep; b.className = 'reset'; }, 2200);
 }
 function exportProgress(){
-  const data = { tag: BACKUP_TAG, v: 1, at: new Date().toISOString(),
-                 items: ITEMS.length, p: prog, s: star };
+  const data = { tag: BACKUP_TAG, v: 2, at: new Date().toISOString(),
+                 items: ITEMS.length, p: prog, s: star, m: miss, b: best };
   // 파일 이름에 한글을 쓰면 크롬이 통째로 버리고 'download'로 저장한다. ASCII로 둔다.
   const name = 'voca-progress-' + new Date().toISOString().slice(0,10) + '.json';
   try{
@@ -965,6 +996,8 @@ function importProgress(text){
   let n = 0;
   Object.keys(d.p).forEach(k=>{ const v = +d.p[k]; if(v >= 0){ prog[k] = Math.min(3, v); n++; } });
   Object.keys(d.s).forEach(k=>{ if(d.s[k]) star[k] = 1; });
+  Object.keys(d.m||{}).forEach(k=>{ const v = +d.m[k]; if(v > 0) miss[k] = v; });
+  Object.keys(d.b||{}).forEach(k=>{ const v = d.b[k]; if(v && v.t) best[k] = v; });
   save(); ses = null; quizQ = null; at = null; render();
   flash('impBtn', n + '개 되살림');
 }
@@ -1066,7 +1099,7 @@ function viewATest(){
     const nc = czOf(g).length, nw = wqOf(g).length;
     return atBack() + `<div class="tmenu">
       <h2>${esc(g.t)}</h2>
-      <p>${g.r.length}개 표현 · 두 파트로 나눠 풉니다.</p>
+      <p>${g.r.length}개 표현 · 두 파트로 나눠 풉니다.${bestText(g) ? ' ' + bestText(g) : ''}</p>
       ${nc ? `<button class="tpick" data-apart="concept">개념 시험
           <span>빈칸에 알맞은 형태 고르기 · ${nc}문항</span></button>`
            : `<p class="empty">이 부록은 개념 시험을 만들 자료가 부족합니다.</p>`}
@@ -1138,6 +1171,9 @@ function atResult(){
     <div class="rrow"><span>정답률</span><b>${rate}%</b></div>
     <div class="rrow"><span>걸린 시간</span><b>${fmtTime(Date.now() - at.start)}</b></div>
     <div class="rrow"><span>틀린 문제</span><b>${wrong.length}개</b></div>
+    ${(()=>{ const b = bestOf(atGroup(), at.part);
+      return b && b.t ? `<div class="rrow"><span>최고 기록</span>
+        <b>${b.r} / ${b.t} (${Math.round(b.r/b.t*100)}%) · ${b.at}</b></div>` : ''; })()}
     ${wrong.length ? `<div class="wlist"><div class="wtitle">다시 볼 것</div>${
       wrong.map(k=>{ const L = line(k);
         return `<div class="wrow"><span class="ww">${esc(L.w)}</span>
@@ -1180,7 +1216,7 @@ function viewApx(){
       <div class="acchead">
         <h3 data-acc="a${gi}" role="button" tabindex="0"
             aria-expanded="${open}"><span class="arrow">▸</span>${esc(g.t)}
-          <span class="cnt">${rows.length}개</span></h3>
+          <span class="cnt">${rows.length}개</span>${bestText(g)}</h3>
         <button class="atest" data-atest="${gi}" data-asrc="apx">시험</button>
       </div>
       <div class="accbody"><p class="gd">${g.g}</p>` +
@@ -1393,7 +1429,8 @@ document.addEventListener('click', e=>{
     const it = ITEMS[ses.ids[ses.i]], a = t.dataset.card;
     if(a==='flip'){ shown = true; }
     else if(a==='know'){ prog[K(it)] = Math.min(3,(prog[K(it)]||0)+1); ses.right++; save(); sesAdvance(); }
-    else if(a==='again'){ prog[K(it)] = 0; ses.wrong.push(it.i); save(); sesAdvance(); }
+    else if(a==='again'){ prog[K(it)] = 0; miss[K(it)] = (miss[K(it)]||0) + 1;
+                          ses.wrong.push(it.i); save(); sesAdvance(); }
     render(); return;
   }
   if(t.dataset.res){
@@ -1425,7 +1462,7 @@ document.addEventListener('click', e=>{
       return;
     }
     resetArm = 0;
-    prog = {}; star = {}; save();
+    prog = {}; star = {}; miss = {}; best = {}; save();
     ses = null; quizQ = null; at = null;
     resetLabel('done');
     resetT = setTimeout(()=>resetLabel(), 2000);
