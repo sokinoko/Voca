@@ -9,7 +9,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="단어장">
-<meta name="theme-color" content="#FBFAF7">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15171A" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.json">
 <style>
 /* 한글 본문용 Hahmlet (SIL OFL 1.1) — 오프라인에서도 쓰려고 woff2를 인라인했다.
@@ -29,8 +30,20 @@
 :root{
   --paper:#FBFAF7; --ink:#16181C; --graphite:#565C66; --rule:#DEDAD1;
   --red:#D33227; --redsoft:#F4D9D6; --mark:#1B1D22; --yellow:#FBE9A6;
+  --card:#ffffff; --ink2:#3f454e; --ink3:#2c3037; --faint:#9aa0aa;
+  --ok:#1a7f4b; --oksoft:#e6f4ec; --press:#f0f4f9; --guide:#b9bec6; --blue:#1558c8;
   --serif:"Hahmlet","Times New Roman",Times,Georgia,serif;
   --sans:"Hahmlet",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+}
+/* 밤에 폰으로 보는 앱이라 기기 설정을 따라 어두운 색으로 바꾼다.
+   색은 전부 토큰이라 여기만 다시 정의하면 된다. */
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#15171A; --ink:#E8E6E1; --graphite:#A3A9B3; --rule:#33373D;
+    --red:#FF7A6E; --redsoft:#4A2622; --mark:#E8E6E1; --yellow:#5C4E1E;
+    --card:#1C1F23; --ink2:#C6CAD1; --ink3:#D2D6DC; --faint:#7C838D;
+    --ok:#5BD49A; --oksoft:#1E3A2C; --press:#23272D; --guide:#4A5059; --blue:#7FA9FF;
+  }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -61,11 +74,11 @@ h1 em{font-style:normal;font-family:var(--sans);font-size:14px;font-weight:600;c
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);font-weight:600}
 .chip{font:inherit;font-size:12px;padding:4px 9px;border:1px solid var(--rule);background:transparent;
   cursor:pointer;color:var(--graphite)}
-.chip[aria-pressed=true]{border-color:var(--red);color:var(--red);font-weight:700;background:#fff}
-select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--ink);background:#fff;
+.chip[aria-pressed=true]{border-color:var(--red);color:var(--red);font-weight:700;background:var(--card)}
+select{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--ink);background:var(--card);
   flex:1;min-width:150px;border-radius:0}
 input[type=search]{font:inherit;font-size:13px;padding:5px 9px;border:1px solid var(--rule);
-  background:#fff;min-width:130px;flex:1}
+  background:var(--card);min-width:130px;flex:1}
 input[type=search]:focus,button:focus-visible{outline:2px solid var(--red);outline-offset:1px}
 .count{font-size:12px;color:var(--graphite);padding:2px 0;width:100%}
 .count b{color:var(--ink)}
@@ -73,16 +86,16 @@ input[type=search]:focus,button:focus-visible{outline:2px solid var(--red);outli
 table{width:100%;border-collapse:collapse}
 tr.row{border-bottom:1px solid var(--rule)}
 td{padding:9px 4px;vertical-align:top}
-.tdnum{width:30px;font-family:var(--serif);font-size:12px;color:#9aa0aa;text-align:right;padding-right:8px}
+.tdnum{width:30px;font-family:var(--serif);font-size:12px;color:var(--faint);text-align:right;padding-right:8px}
 .word{font-family:var(--serif);font-size:17px;font-weight:700;letter-spacing:-.2px}
 .pos{font-family:var(--sans);font-size:10.5px;color:var(--red);font-weight:600;margin-left:5px}
-.chunk{font-family:var(--serif);font-style:italic;font-size:13.5px;color:#2c3037;margin-top:4px}
+.chunk{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink3);margin-top:4px}
 .chunk u{text-decoration-thickness:1.5px;text-underline-offset:3px;font-weight:700;font-style:normal;
   color:var(--red)}
 .axe u{font-weight:700;text-decoration-thickness:1.5px;text-underline-offset:3px;color:var(--red)}
 /* 혼동 어휘 다색 — 뒤에 두어 덮이지 않게 하고 선택자도 더 구체적으로 */
 u.h1,.axe u.h1,.chunk u.h1,.cc u.h1{color:var(--red)}
-u.h2,.axe u.h2,.chunk u.h2,.cc u.h2{color:#1558c8}
+u.h2,.axe u.h2,.chunk u.h2,.cc u.h2{color:var(--blue)}
 u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .src{font-size:10.5px;color:var(--graphite);margin-top:3px}
 .exwrap{margin-top:6px;padding-left:8px;border-left:2px solid var(--rule)}
@@ -90,7 +103,7 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .src .tg{color:var(--red);font-weight:700}
 .mask{margin-top:3px;position:relative;display:inline-block;max-width:100%}
 .mean{font-size:13.5px}
-.tr{font-size:12.5px;color:#3f454e}
+.tr{font-size:12.5px;color:var(--ink2)}
 .mask.hide{color:transparent;background:var(--redsoft);box-shadow:0 0 0 3px var(--redsoft);
   cursor:pointer;border-radius:1px}
 .mask.hide::after{content:"가림판";position:absolute;inset:0;display:flex;align-items:center;
@@ -102,10 +115,10 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
   transition:background .12s;vertical-align:middle}
 .dot.on{background:var(--mark)}
 .star{font:inherit;font-size:19px;line-height:1;background:none;border:0;cursor:pointer;
-  color:#c3c7cd;padding:0 4px 0 0;vertical-align:middle}
+  color:var(--faint);padding:0 4px 0 0;vertical-align:middle}
 .star.on{color:var(--red)}
 
-.card{border:1px solid var(--ink);background:#fff;padding:26px 20px 20px;margin-top:6px;position:relative}
+.card{border:1px solid var(--ink);background:var(--card);padding:26px 20px 20px;margin-top:6px;position:relative}
 .card .no{position:absolute;top:0;left:0;background:var(--ink);color:var(--paper);
   font-size:11px;padding:3px 9px}
 .card .tag{position:absolute;top:6px;right:44px;font-size:11px;color:var(--red);font-weight:700}
@@ -113,11 +126,11 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .card .cw{font-family:var(--serif);font-size:34px;font-weight:700;text-align:center;
   margin:26px 0 4px;letter-spacing:-.5px;word-break:break-word}
 .card .cp{text-align:center;font-size:12px;color:var(--red);font-weight:600}
-.card .cc{font-family:var(--serif);font-style:italic;text-align:center;color:#2c3037;
+.card .cc{font-family:var(--serif);font-style:italic;text-align:center;color:var(--ink3);
   margin:16px 0 6px;font-size:16px}
 .card .cc u{text-decoration-thickness:1.5px;text-underline-offset:3px;font-weight:700;font-style:normal;
   color:var(--red)}
-.card .ct{text-align:center;font-size:13px;color:#3f454e;margin-bottom:16px;min-height:19px}
+.card .ct{text-align:center;font-size:13px;color:var(--ink2);margin-bottom:16px;min-height:19px}
 .card .cm{text-align:center;font-size:19px;min-height:30px;padding:10px 0;
   border-top:1px dashed var(--rule)}
 .card .cm.hide,.card .ct.hide{color:transparent;background:var(--redsoft);border-radius:1px}
@@ -144,14 +157,14 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .wtitle{font-size:12px;font-weight:700;color:var(--red);margin-bottom:5px}
 .wrow{display:flex;gap:10px;padding:4px 0;border-bottom:1px dotted var(--rule)}
 .ww{font-family:var(--serif);font-size:14.5px;font-weight:700;min-width:34%}
-.wm{font-size:12.5px;color:#3f454e}
+.wm{font-size:12.5px;color:var(--ink2)}
 .cstat{text-align:center;font-size:12px;color:var(--graphite);margin-top:10px}
 
 .tbar{height:6px;background:var(--rule);margin:2px 0 4px;overflow:hidden}
 .tbar i{display:block;height:100%;width:100%;background:var(--red);transition:width .06s linear}
 .tnum{text-align:right;font-family:var(--serif);font-size:12px;color:var(--red);margin-bottom:6px}
 .opt{display:block;width:100%;text-align:left;font:inherit;font-size:14px;padding:11px 12px;
-  margin-top:7px;border:1px solid var(--rule);background:#fff;cursor:pointer}
+  margin-top:7px;border:1px solid var(--rule);background:var(--card);cursor:pointer}
 .opt .n{font-family:var(--serif);color:var(--graphite);margin-right:8px}
 .opt.right{border-color:var(--ink);background:var(--yellow)}
 .opt.wrong{border-color:var(--red);color:var(--red)}
@@ -161,7 +174,7 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
   border-left:4px solid var(--red);line-height:1.35}
 .acc h3{cursor:pointer;padding:12px 0 12px 9px;user-select:none;
   -webkit-user-select:none;touch-action:manipulation}
-.acc h3:active{background:#f0f4f9}
+.acc h3:active{background:var(--press)}
 .acc .arrow{display:inline-block;color:var(--red);margin-right:6px;transition:transform .15s}
 .acc.open .arrow{transform:rotate(90deg)}
 .acc .accbody{display:none}
@@ -171,30 +184,30 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
 .acchead{display:flex;align-items:center;gap:8px}
 .acchead h3{flex:1;min-width:0}
 .atest{flex:none;font:inherit;font-size:11.5px;font-weight:600;padding:5px 11px;
-  border:1px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;
+  border:1px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;
   white-space:nowrap;touch-action:manipulation}
-.atest:active{background:var(--ink);color:#fff}
+.atest:active{background:var(--ink);color:var(--card)}
 .solidchip{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
 /* 부록 안의 섹션 구분선 */
 .axsec{font-size:12px;font-weight:700;color:var(--red);margin:16px 0 8px;
   padding:10px 0 0 13px;border-top:1px solid var(--rule)}
 .axsec.first{border-top:0;padding-top:0;margin-top:2px}
 /* 부록 시험 */
-.tmenu{border:1px solid var(--rule);background:#fff;padding:16px;margin:14px 0}
+.tmenu{border:1px solid var(--rule);background:var(--card);padding:16px;margin:14px 0}
 .tmenu h2{font-family:var(--serif);font-size:19px;margin:0 0 4px;line-height:1.35}
 .tmenu p{font-size:12.5px;color:var(--graphite);margin:0 0 14px;line-height:1.6}
 .tpick{display:block;width:100%;text-align:left;font:inherit;font-size:14px;font-weight:600;
-  padding:13px 14px;margin-top:8px;border:1px solid var(--ink);background:#fff;cursor:pointer}
+  padding:13px 14px;margin-top:8px;border:1px solid var(--ink);background:var(--card);cursor:pointer}
 .tpick span{display:block;font-size:11.5px;font-weight:400;color:var(--graphite);margin-top:3px}
-.tpick:active{background:#f0f4f9}
-.czq{border:1px solid var(--rule);background:#fff;padding:16px 14px;margin:12px 0}
+.tpick:active{background:var(--press)}
+.czq{border:1px solid var(--rule);background:var(--card);padding:16px 14px;margin:12px 0}
 .czs{font-family:var(--serif);font-size:16px;line-height:2.1}
 .czb{display:inline-flex;gap:3px;margin:0 3px;vertical-align:baseline}
 .czo{font:inherit;font-family:var(--sans);font-size:12.5px;padding:3px 8px;
-  border:1px solid var(--rule);background:#fff;color:var(--ink);cursor:pointer;
+  border:1px solid var(--rule);background:var(--card);color:var(--ink);cursor:pointer;
   border-radius:2px;touch-action:manipulation}
-.czo.on{border-color:var(--ink);background:var(--ink);color:#fff}
-.czo.right{border-color:#1a7f4b;background:#e6f4ec;color:#1a7f4b;font-weight:700}
+.czo.on{border-color:var(--ink);background:var(--ink);color:var(--card)}
+.czo.right{border-color:var(--ok);background:var(--oksoft);color:var(--ok);font-weight:700}
 .czo.wrong{border-color:var(--red);background:var(--redsoft);color:var(--red);
   text-decoration:line-through}
 .czu{text-decoration:underline;text-underline-offset:3px;font-weight:700}
@@ -206,8 +219,8 @@ u.h3,.axe u.h3,.chunk u.h3,.cc u.h3{color:#137a45}
   padding:10px 12px;margin-top:6px;border-radius:0}
 .czt{font-size:12.5px;color:var(--graphite);margin-top:12px;line-height:1.6}
 .czn{font-size:12.5px;margin-top:6px;padding-left:9px;border-left:3px solid var(--red);
-  color:#2c3037;line-height:1.6}
-.pcard{border:1px solid var(--rule);background:#fff;padding:14px 14px 10px;margin:14px 0}
+  color:var(--ink3);line-height:1.6}
+.pcard{border:1px solid var(--rule);background:var(--card);padding:14px 14px 10px;margin:14px 0}
 .phead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .pw{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:-.5px}
 .pcore{font-size:13px;color:var(--red);font-weight:700}
@@ -215,16 +228,16 @@ svg.pv{display:block;width:100%;max-width:280px;height:72px;margin:10px auto 6px
 svg.pv .l{stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
 svg.pv .r{stroke:var(--red);fill:none;stroke-width:2.5;stroke-linecap:round}
 svg.pv .rf{fill:var(--red);stroke:none}
-svg.pv .g{stroke:#b9bec6;fill:none;stroke-width:1.5}
+svg.pv .g{stroke:var(--guide);fill:none;stroke-width:1.5}
 svg.pv .box{fill:none;stroke:var(--ink);stroke-width:2}
 svg.pv .dash{stroke-dasharray:4 4}
-.pfeel{font-size:12.5px;color:#3f454e;line-height:1.7;margin:4px 0 10px}
+.pfeel{font-size:12.5px;color:var(--ink2);line-height:1.7;margin:4px 0 10px}
 .pgrp{margin-top:10px}
 .plabel{font-size:11.5px;color:var(--red);font-weight:700;border-bottom:1px solid var(--rule);
   padding-bottom:3px;margin-bottom:5px}
 .prow{display:flex;gap:8px;flex-wrap:wrap;align-items:baseline;padding:3px 0}
 .pen{font-family:var(--serif);font-size:13.5px;font-weight:700}
-.pko{font-size:12.5px;color:#3f454e}
+.pko{font-size:12.5px;color:var(--ink2)}
 h4.pgt{margin-top:22px;border-top:1px solid var(--rule);padding-top:12px}
 h4.gt{font-size:13px;margin:16px 0 5px;color:var(--red);font-weight:700}
 table.gtab{width:100%;border-collapse:collapse}
@@ -244,13 +257,13 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 .axh{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .exp{font-family:var(--serif);font-size:16px;font-weight:700}
 .hit{font-size:10.5px;color:var(--red);font-weight:700;white-space:nowrap}
-.new{font-size:10.5px;color:#9aa0aa;white-space:nowrap}
+.new{font-size:10.5px;color:var(--faint);white-space:nowrap}
 .axm{font-size:13.5px}
 .grp h3 .cnt{font-size:12px;color:var(--graphite);font-weight:400;margin-left:4px}
 .badges{white-space:nowrap}
 .badges .new{margin-left:5px}
-.axe{font-family:var(--serif);font-style:italic;font-size:13.5px;color:#2c3037;margin-top:5px}
-.axt{font-size:12.5px;color:#3f454e}
+.axe{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink3);margin-top:5px}
+.axt{font-size:12.5px;color:var(--ink2)}
 .axn{font-size:12px;color:var(--graphite);margin-top:3px;line-height:1.55}
 .poly{border-top:1px solid var(--rule);padding:12px 2px}
 .poly h3{font-family:var(--serif);font-size:19px;margin:0 0 4px}
@@ -265,7 +278,7 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 .reset{font:inherit;font-size:11.5px;color:var(--graphite);background:none;border:0;
   text-decoration:underline;cursor:pointer;padding:4px}
 .reset.arm{color:var(--red);font-weight:700}
-.reset.done{color:#1a7f4b;font-weight:700;text-decoration:none}
+.reset.done{color:var(--ok);font-weight:700;text-decoration:none}
 /* 기록 버튼은 평소엔 접어 둔다. 폰에서 탭 6개와 한 줄에 같이 들어가지 않는다 */
 .recpanel{display:none;gap:18px;justify-content:center;padding:8px 0 2px;
   border-top:1px dotted var(--rule);margin-top:6px}
@@ -283,16 +296,20 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
 .qt{font-size:13px}
 .qn{color:var(--graphite);font-size:11.5px;margin-right:4px}
 .qw{font-family:var(--serif);font-size:15.5px;font-weight:700}
-.qs{font-size:10px;color:#9aa0aa;margin-left:5px}
-.ax-q .pos{color:#8a8f98}
+.qs{font-size:10px;color:var(--faint);margin-left:5px}
+.ax-q .pos{color:var(--faint)}
 .ql{height:17px;border-bottom:1px solid var(--rule);margin-top:3px}
 .ansbox{margin-top:26px;border-top:3px double var(--ink);padding-top:10px;font-size:12px}
 .ansbox .sh{border-bottom:1px solid var(--rule)}
 .ansgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px 12px;margin-top:6px}
-.an{color:#3f454e;font-size:11.5px}
+.an{color:var(--ink2);font-size:11.5px}
 .an b{font-family:var(--serif);color:var(--ink);margin-right:3px}
 @media print{
-  body{padding:0;background:#fff}
+  /* 다크 모드로 보고 있어도 인쇄는 흰 종이에 검은 글씨여야 한다 */
+  :root{--paper:#ffffff; --card:#ffffff; --ink:#16181C; --ink2:var(--ink2); --ink3:var(--ink3);
+        --graphite:#565C66; --rule:#DEDAD1; --faint:var(--faint); --red:#D33227;
+        --redsoft:#F4D9D6; --blue:var(--blue); --guide:var(--guide)}
+  body{padding:0;background:#ffffff;color:#16181C}
   header,.foot,.controls,.count,.noprint{display:none!important}
   .sheet{margin:0}
   .q{break-inside:avoid}
