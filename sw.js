@@ -1,4 +1,4 @@
-const CACHE = 'voca-v2';
+const CACHE = 'voca-v3';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
@@ -12,14 +12,18 @@ self.addEventListener('activate', e => {
   ).then(() => self.clients.claim()));
 });
 
-// 온라인이면 최신 파일, 오프라인이면 캐시
+// 캐시가 있으면 그걸 먼저 보여준다. 그동안 뒤에서 최신 파일을 받아서
+// 캐시를 갱신해 둔다. 다음에 열 때부터 최신본이 보인다.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
-      return res;
-    }).catch(() => caches.match(e.request).then(r => r || caches.match('./')))
+    caches.match(e.request).then(cached => {
+      const fetchPromise = fetch(e.request).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+        return res;
+      }).catch(() => cached || caches.match('./'));
+      return cached || fetchPromise;
+    })
   );
 });
