@@ -167,3 +167,19 @@ def sentences(text):
             s = s.strip()
             if len(s.split()) >= 4: out.append(s)
     return out
+
+def question_spans(text, last=45):
+    """문제지 본문을 문항별로 가른다. {문항번호: 그 문항이 차지하는 구간}
+
+    「31. We know that…」처럼 번호 뒤에 영어가 오기도 하고 「26. Claude Shannon에
+    관한…」처럼 한글이 오기도 한다. 번호만 보고 1부터 차례로 올라가는 것만 잡는다.
+    """
+    want, marks = 1, []
+    for m in re.finditer(r'(?<![\d.,])(\d{1,2})\.(?=\s)', text):
+        if int(m.group(1)) == want:
+            marks.append((want, m.start())); want += 1
+            if want > last: break
+    out = {}
+    for i, (no, s) in enumerate(marks):
+        out[no] = (s, marks[i+1][1] if i+1 < len(marks) else len(text))
+    return out

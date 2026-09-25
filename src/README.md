@@ -47,6 +47,18 @@ node src/test/pwdark.js    # 하나만
 인쇄 클래스 pq·pa가 겹쳐 인쇄면이 비던 것, 푸터가 한 줄에 안 들어가던 것,
 글자 크기 배율이 모바일 재정의에 막혀 안 먹던 것.
 
+### tools/
+
+평가원 PDF에서 단어를 뽑는 도구다. 시험이 하나 더 올 때마다 쓴다.
+
+```bash
+python3 src/tools/wp_extract.py <해설지.pdf>      # [Words and Phrases]를 문항별로
+python3 src/tools/pdftext.py   <시험지.pdf> out.txt  # 낱말 안 공백을 되돌린 본문
+```
+
+`pdftext.question_spans()`로 본문을 문항별로 가른다. 예문은 **그 낱말의 뜻이 실린
+문항의 지문에서만** 가져온다(묶음 문항은 그 묶음 안에서). 그래야 출처가 맞는다.
+
 ### data/
 
 | 파일 | 내용 |
@@ -72,6 +84,7 @@ python3 src/apply/05_year.py      # 출처에 학년도를 붙인다
 python3 src/apply/06_day80.py     # 두 Day씩 합쳐 80개 묶음으로
 python3 src/apply/07_y26_6.py     # 26 6모 단어를 뒤 Day에 붙인다
 python3 src/apply/08_suneung26.py # 수능 표기를 26학년도로 바로잡는다
+python3 src/apply/09_y26_9.py     # 26 9모 단어를 뒤 Day에 붙인다
 node    src/check.js              # 검사
 ```
 
