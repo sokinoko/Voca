@@ -143,9 +143,9 @@ def _shift(toks):
 
 def rejoin(s):
     """낱말 안이 갈라진 것을 사전을 보고 붙인다. 사전에 없는 조합은 두다."""
-    toks = _letters(_runs(re.split(r'\s+', s)))
-    for _ in range(3):                    # 세 조각으로 갈린 것(impo rt ant)은 한 번에 안 붙는다
-        joined = _fragments(toks)
+    toks = _runs(re.split(r'\s+', s))
+    for _ in range(3):                    # 세 조각으로 갈린 것(fo rt h · impo rt ant)은
+        joined = _fragments(_letters(toks))   # 한 번에 안 붙는다. 더 안 붙을 때까지 돌린다
         if joined == toks: break
         toks = joined
     return ' '.join(_shift(_contract(toks)))

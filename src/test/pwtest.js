@@ -54,11 +54,14 @@ async function runToEnd(p, kind){
   ok('개념 시험 문항이 넉넉히 있다', +total >= 53);
   ok('개념 시험 완주 → 결과', await runToEnd(p,'concept'));
   console.log('   결과:', (await p.locator('.result').textContent()).replace(/\s+/g,' ').trim().slice(0,100));
+  const wrong = +((await p.locator('.result').textContent()).match(/틀린 문제\s*(\d+)/) || [0,0])[1];
   const wrongN = await p.locator('[data-ares="retry"]').count();
   if(wrongN){
     await p.locator('[data-ares="retry"]').click(); await p.waitForTimeout(300);
-    ok('틀린 것만 다시 — 문항 수가 줄어든다',
-       +(await p.locator('.sprog').textContent()).match(/\/\s*(\d+)/)[1] < 53);
+    // 무작위로 찍기 때문에 틀린 개수는 그때그때 다르다. 결과창이 말한 수와 견준다
+    const again = +(await p.locator('.sprog').textContent()).match(/\/\s*(\d+)/)[1];
+    ok('틀린 것만 다시 — 틀린 개수만큼만 나온다',
+       again === wrong, `틀린 ${wrong}개 → 다시 ${again}문항 (처음 ${total})`);
   }
 
   // ── 단어 시험 ──
