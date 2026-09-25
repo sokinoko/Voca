@@ -7,6 +7,10 @@ cd "$(dirname "$0")/../.."
 echo "── 데이터·생성기 검사"
 node src/check.js || exit 1
 echo
+if ! node -e "require('playwright')" 2>/dev/null; then
+  echo "playwright가 없다. 먼저 설치한다:  npm install --no-save playwright"
+  exit 1
+fi
 echo "── 브라우저 회귀"
 fail=0
 for f in src/test/pw*.js; do
