@@ -56,12 +56,15 @@ const fake = list => `
     window.__late = [];   // init script는 함수로 감싸이므로 전역에 둔다
     Object.defineProperty(window.speechSynthesis,'getVoices',{configurable:true,
       value:()=>window.__late});
-    setTimeout(()=>{ window.__late=[{name:'Samantha',lang:'en-US',default:true}];
-      if(speechSynthesis.onvoiceschanged) speechSynthesis.onvoiceschanged(); }, 2500);
+    window.__voicesUp = () => {                 // 타이머 대신 테스트가 직접 올린다
+      window.__late = [{name:'Samantha',lang:'en-US',default:true}];
+      if(speechSynthesis.onvoiceschanged) speechSynthesis.onvoiceschanged();
+    };
   `);
-  await p.goto(APP); await p.waitForTimeout(600);
+  await p.goto(APP); await p.waitForTimeout(300);
   const before = await p.locator('.say').count();
-  await p.waitForTimeout(2600);
+  await p.evaluate(() => window.__voicesUp());
+  await p.waitForTimeout(400);
   ok('음성이 늦게 올라와도 버튼이 나타난다', before===0 && (await p.locator('.say').count())>10,
      `처음 ${before} → 나중 ${await p.locator('.say').count()}`);
   await p.close();
