@@ -292,6 +292,11 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
   border:1px solid var(--paper);background:transparent;color:var(--paper);cursor:pointer}
 .swhint{display:block;margin-top:5px;font-size:10.5px;color:var(--faint)}
 #panel .card{transition:transform .12s ease-out, opacity .12s ease-out}
+.say{font:inherit;font-size:12px;line-height:1;padding:2px 4px;margin-left:5px;
+  border:0;background:none;cursor:pointer;opacity:.55;vertical-align:2px;
+  touch-action:manipulation}
+.say:active{opacity:1}
+.cw .say{font-size:15px;vertical-align:8px}
 .miss{font-size:10.5px;color:var(--red);font-weight:700;margin-left:5px;vertical-align:1px}
 .bestx{font-size:11px;font-weight:400;color:var(--graphite);margin-left:6px;white-space:nowrap}
 .bestx b{color:var(--ink)}
@@ -446,6 +451,57 @@ function starBtn(it, cls){
     aria-pressed="${on}" aria-label="${esc(it.w)} 별표">${on?'★':'☆'}</button>`;
 }
 
+/* 발음 읽어 주기.
+   예전에 넣었다가 뺀 적이 있다. speechSynthesis가 "있다"는 것만 확인하고 speak()를
+   불렀기 때문인데, 한국어로 설정된 기기에서는 기본 한국어 음성이 영어 철자를 한글
+   음가로 읽어 버린다. 그래서 여기서는 영어 음성을 직접 골라 쓰고,
+   영어 음성이 하나도 없으면 버튼을 아예 띄우지 않는다. 소리가 안 나는 것은 괜찮아도
+   엉뚱한 소리가 나는 것은 안 된다. */
+let enVoice = null, voicesReady = false;
+function pickVoice(){
+  if(typeof speechSynthesis === 'undefined') { voicesReady = true; return; }
+  const v = speechSynthesis.getVoices();
+  if(!v.length) return;                       // 아직 안 올라왔다
+  const en = v.filter(x => /^en([-_]|$)/i.test(x.lang || ''));
+  // 미국 영어 > 영국 영어 > 그 밖의 영어. 같은 조건이면 기본 음성을 쓴다.
+  const rank = x => (/^en[-_]us/i.test(x.lang) ? 0 : /^en[-_]gb/i.test(x.lang) ? 1 : 2)
+                  - (x.default ? 0.5 : 0);
+  enVoice = en.sort((a,b)=>rank(a)-rank(b))[0] || null;
+  voicesReady = true;
+}
+function sayText(w){                          // 표제어에서 읽을 부분만 남긴다
+  return String(w)
+    .replace(/[([][^)\]]*[)\]]/g, ' ')        // (셀 수 없는 명사), [thing]
+    .replace(/[가-힣]+/g, ' ')                 // 한글 설명
+    .split('/')[0]                            // 여러 형태면 첫 번째만
+    .replace(/~+\s*ing|\bing\b|-\s*ing/gi, ' ')
+    .replace(/\b[ABOV]\b/g, ' ')              // A, B, O, V 자리표시
+    .replace(/[~+·…—\-]+/g, ' ')
+    .replace(/\s{2,}/g, ' ').trim();
+}
+function speak(w){
+  if(!enVoice) return;
+  const text = sayText(w);
+  if(!text) return;
+  try{
+    speechSynthesis.cancel();                 // 앞의 것이 밀려 있으면 끊는다
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = enVoice.lang;                    // lang만으로도 영어 음성이 잡힌다
+    u.rate = 0.9;
+    // voice 대입이 튕기는 기기가 있다. 그때도 발화 자체는 살려 둔다.
+    try{ u.voice = enVoice; }catch(e){}
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function sayBtn(attr, val){                   // 영어 음성이 없으면 아무것도 그리지 않는다
+  return enVoice ? `<button class="say" ${attr}="${val}" aria-label="발음 듣기">🔊</button>` : '';
+}
+if(typeof speechSynthesis !== 'undefined'){
+  pickVoice();
+  speechSynthesis.onvoiceschanged = ()=>{ const had = !!enVoice; pickVoice();
+    if(!had && enVoice) render(); };         // 늦게 올라오면 버튼을 그려 준다
+}
+
 function meter(){
   const pool = state.day ? ITEMS.filter(x=>x.d===state.day) : ITEMS;
   const done = pool.filter(it=>(prog[K(it)]||0)>=3).length;
@@ -518,6 +574,7 @@ function viewList(list){
     const mc = miss[K(it)]||0;
     return `<tr class="row"><td class="tdnum">${n+1}</td><td>
       <span class="word">${esc(it.w)}</span><span class="pos">${esc(it.p)}</span>${
+        sayBtn('data-say', it.i)}${
         mc ? `<span class="miss" title="틀린 횟수">✗${mc}</span>` : ''}
       <div class="mask mean ${h}" data-peek>${esc(it.m)}</div>
       ${it.ex.map(e=>`<div class="exwrap">
@@ -621,7 +678,7 @@ function viewCard(list){
     <div class="no">${esc(it.es.join('/'))} ${esc(it.as.join('/'))}</div>
     <div class="tag">${it.t.map(esc).join(' / ')}</div>
     ${starBtn(it)}
-    <div class="cw">${esc(it.w)}</div>
+    <div class="cw">${esc(it.w)}${sayBtn('data-say', it.i)}</div>
     <div class="cp">${esc(it.p)}</div>
     ${it.ex.map(e=>`<div class="cc">${e.ch}</div>
       ${e.tr?`<div class="ct ${h}">${esc(e.tr)}</div>`:''}
@@ -677,7 +734,7 @@ function viewQuiz(list){
   <div class="card">
     <div class="no">${esc(it.ex[0].s)}</div>
     ${starBtn(it)}
-    <div class="cw">${esc(it.w)}</div>
+    <div class="cw">${esc(it.w)}${answered? sayBtn('data-say', it.i) : ''}</div>
     <div class="cp">${esc(it.p)}</div>
     ${timerOn && !answered ? `<div class="tbar"><i id="tfill"></i></div>
       <div class="tnum"><span id="tnum">${(timeLimit/1000).toFixed(1)}</span>초</div>` : ''}
@@ -1269,7 +1326,7 @@ function viewWq(){
   const q = atQ(), pk = at.picks[0];
   return atProg() + `<div class="card">
     <div class="no">${esc(atGroup().t)}</div>
-    <div class="cw">${esc(q.r.e)}</div>
+    <div class="cw">${esc(q.r.e)}${at.done? sayBtn('data-saytext', esc(q.r.e)) : ''}</div>
     <div class="cc">${at.done ? q.r.xh : '뜻으로 알맞은 것을 고르시오.'}</div>
     <div class="ct">${at.done ? esc(q.r.xt) : ''}</div>
     ${q.opts.map((o,k)=>{
@@ -1357,7 +1414,7 @@ function viewApx(){
           lastSec = r.sec;
         }
         return head + `<div class="ax">
-        <div class="axh"><span class="exp">${esc(r.e)}</span>
+        <div class="axh"><span class="exp">${esc(r.e)}${sayBtn('data-saytext', esc(r.e))}</span>
           <span class="${r.s==='추가'?'new':'hit'}">${r.s==='추가'?'본시험 대비':esc(r.s)}</span></div>
         <div class="mask axm ${h}" data-peek>${esc(r.m)}</div>
         <div class="axe">${r.xh}</div>
@@ -1539,6 +1596,8 @@ document.addEventListener('click', e=>{
     return;
   }
 
+  if(t.dataset.say!==undefined){ speak(ITEMS[+t.dataset.say].w); return; }
+  if(t.dataset.saytext!==undefined){ speak(t.dataset.saytext); return; }
   if(t.dataset.star!==undefined){
     const key = K(ITEMS[+t.dataset.star]);
     if(star[key]) delete star[key]; else star[key] = 1;
