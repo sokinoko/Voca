@@ -18,6 +18,10 @@ def lex():
     d = set(cmudict.dict())
     return d, z
 
+def zf(w):
+    _, z = lex()
+    return z(w.lower().strip("'’.,;:!?()\""), 'en')
+
 def incmu(w):
     """cmudict에 있는가 — 진짜 낱말인지 가리는 더 깐깐한 기준."""
     d, _ = lex()
@@ -27,7 +31,7 @@ def word(w):
     d, z = lex()
     w = w.lower().strip("'’.,;:!?()\"")
     if len(w) == 1: return w in ('a', 'i')      # 낱말 안이 갈라진 한 글자는 낱말이 아니다
-    if len(w) == 2: return w in d              # ll·fo·nd 같은 조각을 낱말로 보지 않는다
+    if len(w) <= 3: return w in d              # ll·fo·goe·sto 같은 조각을 낱말로 보지 않는다
     return bool(w) and (w in d or z(w, 'en') >= 2.0)
 
 def despace(s):
@@ -103,8 +107,11 @@ def _fragments(toks):
         b = toks[i+1] if i+1 < len(toks) else ''
         ca, cb = core(a), core(b)
         # 뒤 조각은 cmudict에 있어야 낱말로 인정한다. lls·fulness 같은 꼬리를 걸러낸다.
-        if (a == ca and len(ca) >= 2 and len(cb) >= 2
-                and word(ca + cb) and not (word(ca) and incmu(cb))):
+        # 뒤 조각이 사전에 있어도(safe ty · import ant) 붙인 쪽이 훨씬 흔하면 붙인다.
+        joinable = (a == ca and len(ca) >= 2 and len(cb) >= 2 and word(ca + cb)
+                    and (not (word(ca) and incmu(cb))
+                         or (zf(ca + cb) >= 3.0 and zf(ca + cb) > zf(cb) + 1.0)))
+        if joinable:
             out.append(a + b); i += 2; continue
         out.append(a); i += 1
     return out
@@ -136,10 +143,18 @@ def _shift(toks):
 
 def rejoin(s):
     """낱말 안이 갈라진 것을 사전을 보고 붙인다. 사전에 없는 조합은 두다."""
-    return ' '.join(_shift(_contract(_fragments(_letters(_runs(re.split(r'\s+', s)))))))
+    toks = _letters(_runs(re.split(r'\s+', s)))
+    for _ in range(3):                    # 세 조각으로 갈린 것(impo rt ant)은 한 번에 안 붙는다
+        joined = _fragments(toks)
+        if joined == toks: break
+        toks = joined
+    return ' '.join(_shift(_contract(toks)))
+
+LIG = {'ﬀ':'ff','ﬁ':'fi','ﬂ':'fl','ﬃ':'ffi','ﬄ':'ffl','ﬅ':'st','ﬆ':'st'}
 
 def clean(s):
     s = s.replace('﻿', '')
+    for a, b in LIG.items(): s = s.replace(a, b)   # 합자(ﬃ)를 풀어 놓는다
     s = despace(s)
     s = re.sub(r'\s*\n\s*', ' ', s)
     s = rejoin(s)
