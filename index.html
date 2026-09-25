@@ -69,6 +69,9 @@ h1 em{font-style:normal;font-family:var(--sans);font-size:14px;font-weight:600;c
 
 .controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
 .seg{display:flex;border:1px solid var(--ink)}
+/* 시험이 늘면 한 줄에 다 안 들어간다. 폰에서 화면이 가로로 밀리지 않게 접는다 */
+.controls .seg{flex-wrap:wrap;max-width:100%}
+.controls .seg button{border-bottom:1px solid var(--rule)}
 .seg button{font:inherit;font-size:12.5px;padding:5px 10px;background:transparent;border:0;
   border-right:1px solid var(--rule);cursor:pointer;color:var(--graphite)}
 .seg button:last-child{border-right:0}
