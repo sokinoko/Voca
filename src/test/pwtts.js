@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { executablePath: CHROME } = require('./chrome');
 const path = require('path');
 const APP = 'file://' + path.join(__dirname, '..', '..', 'index.html');
 let fails=0; const ok=(n,c,x)=>{console.log((c?'  통과  ':'  실패  ')+n+(x?'   '+x:''));if(!c)fails++;};
@@ -8,7 +9,7 @@ const fake = list => `
     value:()=>(${JSON.stringify(list)})});
 `;
 (async () => {
-  const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+  const b = await chromium.launch({executablePath: CHROME});
 
   // ① 영어 음성이 전혀 없는 기기 (예전 사고가 나던 상황)
   let p = await b.newPage({viewport:{width:390,height:844}});

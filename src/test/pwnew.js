@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { executablePath: CHROME } = require('./chrome');
 const path = require('path');
 const APP = 'file://' + path.join(__dirname, '..', '..', 'index.html');   // 저장소의 index.html
 
@@ -22,7 +23,7 @@ async function answerOne(p){
   return false;
 }
 (async () => {
-  const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+  const b = await chromium.launch({executablePath: CHROME});
   const p = await b.newPage({ viewport:{width:390,height:844} });
   const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
   await p.goto(APP); await p.waitForTimeout(700);

@@ -1,4 +1,5 @@
 const { chromium } = require('playwright');
+const { executablePath: CHROME } = require('./chrome');
 // 스크린샷은 저장소에 남기지 않는다
 const SHOT = n => require('path').join(require('os').tmpdir(), 'voca-' + n);
 const path = require('path');
@@ -8,7 +9,7 @@ let fails=0; const ok=(n,c,x)=>{console.log((c?'  통과  ':'  실패  ')+n+(x?'
 const lum = c => { const [r,g,b]=c.match(/\d+/g).map(Number).slice(0,3).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);}); return .2126*r+.7152*g+.0722*b; };
 const ratio = (a,b) => { const [x,y]=[lum(a),lum(b)].sort((p,q)=>q-p); return (x+.05)/(y+.05); };
 (async () => {
-  const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+  const b = await chromium.launch({executablePath: CHROME});
   for (const scheme of ['light','dark']){
     const p = await b.newPage({ viewport:{width:390,height:844}, colorScheme:scheme, deviceScaleFactor:2 });
     const errs=[]; p.on('pageerror',e=>errs.push(String(e)));

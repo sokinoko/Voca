@@ -14,14 +14,28 @@ fi
 echo "── 브라우저 회귀"
 fail=0
 for f in src/test/pw*.js; do
-  case "$f" in *pwupd.js) continue;; esac      # http 서버가 필요해 따로 돌린다
+  case "$f" in *pwupd.js|*pwcache.js) continue;; esac   # http 가 필요해 아래에서 따로 돌린다
   printf '%-22s ' "$(basename "$f")"
   if timeout 240 node "$f" >/tmp/$(basename "$f").log 2>&1; then echo "통과"
   else echo "★ 실패 (/tmp/$(basename "$f").log)"; fail=1; fi
 done
 printf '%-22s ' "test_sheet.js"
 node src/test/test_sheet.js >/tmp/test_sheet.log 2>&1 && echo "통과" || { echo "★ 실패"; fail=1; }
+
+# ── http 가 있어야 도는 것들 (서비스 워커·새 버전 알림) ──
 echo
-echo "새 버전 알림(pwupd)은 http가 필요하다:"
-echo "  python3 -m http.server 8778 & node src/test/pwupd.js"
+echo "── 서비스 워커 · 새 버전 알림 (http)"
+PORT=8778
+python3 -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1 &
+SRV=$!
+trap 'kill $SRV 2>/dev/null' EXIT
+sleep 2
+for f in src/test/pwcache.js src/test/pwupd.js; do
+  [ -f "$f" ] || continue
+  printf '%-22s ' "$(basename "$f")"
+  if VOCA_HTTP="http://127.0.0.1:$PORT/index.html" timeout 240 node "$f" >/tmp/$(basename "$f").log 2>&1
+  then echo "통과"; else echo "★ 실패 (/tmp/$(basename "$f").log)"; fail=1; fi
+done
+kill $SRV 2>/dev/null
+
 exit $fail

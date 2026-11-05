@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+# 테스트 스크린샷은 빼되 앱이 쓰는 아이콘은 넣는다
 *.png
+!icon-*.png
 *.log
-node_modules/
+node_modules
