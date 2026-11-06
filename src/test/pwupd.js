@@ -1,21 +1,32 @@
 const { chromium } = require('playwright');
+const { executablePath: CHROME } = require('./chrome');
 const path = require('path');
 const APP = 'file://' + path.join(__dirname, '..', '..', 'index.html');   // 저장소의 index.html
 
 const fs=require('fs');
+const URL = process.env.VOCA_HTTP || 'http://127.0.0.1:8778/index.html';
+/* 이 검사는 배포된 척하려고 index.html 을 잠깐 고친다. 반드시 되돌린다 —
+   예전에는 되돌리지 않아 저장소가 더럽혀진 채로 남았다(<!-- v2 -->가 커밋될 뻔했다). */
+const HTML = path.join(__dirname, '..', '..', 'index.html');
+const ORIG = fs.readFileSync(HTML, 'utf8');
+let restored = false;
+const restore = () => { if(!restored){ restored = true; try{ fs.writeFileSync(HTML, ORIG); }catch(e){} } };
+process.on('exit', restore);
+['SIGINT','SIGTERM','uncaughtException','unhandledRejection'].forEach(e=>
+  process.on(e, ()=>{ restore(); process.exit(1); }));
+
 let fails=0; const ok=(n,c,x)=>{console.log((c?'  통과  ':'  실패  ')+n+(x?'   '+x:''));if(!c)fails++;};
 (async () => {
-  const b = await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+  const b = await chromium.launch({executablePath: CHROME});
   const p = await b.newPage({ viewport:{width:390,height:844} });
   const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
-  await p.goto('http://127.0.0.1:8778/index.html'); await p.waitForTimeout(1200);
+  await p.goto(URL); await p.waitForTimeout(1200);
   ok('처음엔 알림이 없다', (await p.locator('#updBar').count())===0);
   const tag1 = await p.evaluate(()=>verTag);
   ok('ETag를 기준값으로 잡는다', !!tag1, String(tag1).slice(0,24));
 
-  // 파일을 바꿔 배포된 것처럼 만든다
-  const s = fs.readFileSync(require('path').join(__dirname,'..','..','index.html'),'utf8');
-  fs.writeFileSync(require('path').join(__dirname,'..','..','index.html'), s.replace('</body>','<!-- v2 --></body>'));
+  // 파일을 바꿔 배포된 것처럼 만든다 (끝나면 restore 가 되돌린다)
+  fs.writeFileSync(HTML, ORIG.replace('</body>', '<!-- v2 --></body>'));
   await p.waitForTimeout(1100);
   // 앱을 다시 앞으로 가져온 것처럼
   await p.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
@@ -31,5 +42,7 @@ let fails=0; const ok=(n,c,x)=>{console.log((c?'  통과  ':'  실패  ')+n+(x?'
   ok('새로고침하면 알림이 사라진다', (await p.locator('#updBar').count())===0);
   ok('JS 에러 없음', errs.length===0, errs[0]||'');
   console.log(fails?`실패 ${fails}건`:'전부 통과');
-  await b.close(); process.exit(fails?1:0);
+  await b.close();
+  restore();
+  process.exit(fails?1:0);
 })();
