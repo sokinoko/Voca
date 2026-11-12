@@ -1866,13 +1866,24 @@ async function refreshNow(){
   location.reload();
 }
 
+async function cachedTag(){
+  try{
+    if(!window.caches) return null;
+    const here = location.href.split('#')[0].split('?')[0];
+    const r = (await caches.match(here)) || (await caches.match('index.html')) || (await caches.match('./'));
+    return r ? (r.headers.get('etag') || r.headers.get('last-modified')) : null;
+  }catch(e){ return null; }
+}
 async function checkUpdate(){
   if(!location.protocol.startsWith('http')) return;
   try{
     const r = await fetch('index.html', { method:'HEAD', cache:'no-store' });
     const tag = r.headers.get('etag') || r.headers.get('last-modified');
     if(!tag) return;
-    if(verTag === null){ verTag = tag; return; }   // 처음 본 값이 기준이 된다
+    // 기준은 지금 화면에 뜬 파일 — 캐시에 들어 있는 index.html의 ETag다.
+    // 전에는 앱을 켜고 처음 물어본 서버 값을 기준으로 삼아서, 캐시가 옛 파일을 띄워도
+    // 서버 값과 서버 값을 비교하게 되어 새 배포가 있어도 알림이 끝내 안 떴다.
+    if(verTag === null) verTag = (await cachedTag()) || tag;
     if(tag !== verTag) showUpdate();
   }catch(e){}                                      // 오프라인이면 조용히 넘어간다
 }
