@@ -32,6 +32,8 @@ let fail=0; const ok=(n,c,x='')=>{console.log((c?'  통과  ':'  실패  ')+n+(x
 
   // 회독 점이 제자리에서 바뀌는가 (목록이 다시 그려지지 않아야)
   await p.evaluate(()=>window.scrollTo(0,0)); await p.waitForTimeout(200);
+  // 맨 위 「영어 지문 읽을 때」 상자가 첫 줄을 화면 밖으로 밀 수 있다 — 먼저 들여놓고 잰다
+  await p.locator('tr.row').first().scrollIntoViewIfNeeded(); await p.waitForTimeout(200);
   const before = await p.locator('tr.row').count();
   const y0 = await p.evaluate(()=>window.scrollY);
   await p.locator('tr.row').first().locator('.dot').nth(1).click(); await p.waitForTimeout(250);
