@@ -40,6 +40,18 @@ let fails=0; const ok=(n,c,x)=>{console.log((c?'  통과  ':'  실패  ')+n+(x?'
      `알림끝 ${Math.round(box.y+box.height)} / 탭 시작 ${Math.round(foot.y)}`);
   await p.locator('#updBtn').click(); await p.waitForTimeout(1200);
   ok('새로고침하면 알림이 사라진다', (await p.locator('#updBar').count())===0);
+
+  // 진짜로 겪은 일: 앱을 끈 사이에 배포되고, 다시 켜면 워커가 캐시의 옛 파일을 띄운다.
+  // 그때도 알림이 떠야 한다 (전에는 켤 때 서버 값을 기준으로 잡아 영영 안 떴다)
+  await p.reload(); await p.waitForTimeout(1500);              // 지금 파일(v2)이 캐시에 들어간다
+  fs.writeFileSync(HTML, ORIG.replace('</body>', '<!-- v3 --></body>'));
+  await p.waitForTimeout(1100);
+  await p.reload(); await p.waitForTimeout(1500);              // 캐시가 주는 v2로 다시 켜진다
+  const fromCache = await p.evaluate(()=>document.documentElement.outerHTML.includes('<!-- v2 -->'));
+  ok('다시 켜면 캐시의 옛 파일이 뜬다 (전제)', fromCache);
+  ok('그래도 새 배포 알림이 뜬다', (await p.locator('#updBar').count())===1);
+  await p.locator('#updBtn').click(); await p.waitForTimeout(1500);
+  ok('새로고침하면 새 파일이 뜬다', await p.evaluate(()=>document.documentElement.outerHTML.includes('<!-- v3 -->')));
   ok('JS 에러 없음', errs.length===0, errs[0]||'');
   console.log(fails?`실패 ${fails}건`:'전부 통과');
   await b.close();
