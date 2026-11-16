@@ -71,6 +71,13 @@ header{border-bottom:3px double var(--ink);padding:14px 0 8px;margin-bottom:12px
 .entip em{font-style:normal;color:var(--red);font-weight:600}
 .entip i{font-style:normal;color:var(--graphite);font-size:.9em}
 .et-sub{display:flex;flex-direction:column;margin-top:3px;font-size:.92em;color:var(--graphite)}
+.ecode dl{margin:0;padding:0 0 10px;border-top:1px dashed var(--rule);display:grid;grid-template-columns:minmax(6.5em,max-content) 1fr;
+  font-size:calc(13.5px * var(--fs));line-height:1.5;color:var(--ink2)}
+.ecode dt,.ecode dd{margin:0;padding:6px 0;border-bottom:1px dashed var(--rule)}
+.ecode dt{padding-right:12px;color:var(--red);font-weight:700;max-width:9.5em}
+.ecode dt span{display:block;font-size:.8em;letter-spacing:.3px;color:var(--graphite);font-weight:600}
+.ecode .ec-h{grid-column:1/-1;margin:8px 0 0;padding:4px 0;font-weight:700;color:var(--ink);border-bottom:1.5px solid var(--ink)}
+.ecode .ec-h:first-child{margin-top:6px}
 @media print{.entip{display:none}}
 .hrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .appicon{width:26px;height:26px;vertical-align:-5px;margin-right:7px;border-radius:6px}
@@ -376,7 +383,7 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
   <ol>
     <li>1~2문장 꼼꼼히 읽기! <em>(orient)</em></li>
     <li>모르겠는 문장 → 예시로 가기 <i>or</i> 뒷문장 읽기
-      <div class="et-sub"><span><em>a)</em> 대조 전 : 위아래 같은 논리</span><span><em>b)</em> 대조 후 : 대조 외 내용 버리기</span></div></li>
+      <div class="et-sub"><span><em>a)</em> 대조 전 : 위아래 같은 논리</span><span><em>b)</em> 대조 후 : 대조 부분 윗문장 내용 버리기 (통념-반박, 대조 등)</span></div></li>
     <li>듣기 풀 때 집중! : 선지를 통해 예측</li>
     <li>시간에 쫓겨 명사 위주 독해 / 잔상 독해 / 무의미한 밑줄 독해 <em>✗</em></li>
     <li>선지 꼼꼼히 : <em>단어 하나로 가른다</em></li>
@@ -385,6 +392,29 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
     <li>1등급 맞기~ ^^</li>
     <li>해석 안 되면 주어 동사부터 잡자!</li>
   </ol>
+</details>
+<!-- 평가원의 코드 — 지문 논리 구조와 오답을 만드는 방식. 길어서 접힌 채로 뜬다 -->
+<details class="entip ecode">
+  <summary><b>※ 평가원의 코드</b><span class="et-fold">접기</span></summary>
+  <dl>
+    <div class="ec-h">논리 구조 코드</div>
+    <dt><span>CODE 1</span>환원</dt><dd>앞 문장을 다른 표현으로 바꿔 말함(재명사화·구의어·비유). 정답은 대개 환원의 끝에 놓인다.</dd>
+    <dt><span>CODE 2</span>대조</dt><dd>두 소재·과거와 현재·not A but B. 쟁점이 곧 주제.</dd>
+    <dt><span>CODE 3</span>역접</dt><dd>통념 → 반박(however, yet). 역접 뒤가 주제.</dd>
+    <dt><span>CODE 4</span>예시·나열</dt><dd>일반 진술 뒤의 for instance·Consider·Also. 예시는 건너뛰어도 주제가 보인다.</dd>
+    <dt><span>CODE 5</span>인과</dt><dd>therefore·this is why·lead to. 결과 문장이 요지·빈칸이 되기 쉽다.</dd>
+    <dt><span>CODE 6</span>문제-해결·연구</dt><dd>문제→해결, 질문→대답, 연구(study·experiment)는 결과에 주목.</dd>
+    <dt><span>CODE 7</span>비유·유사</dt><dd>Just as·likewise·metaphor. 비유와 소재의 공통점이 주제.</dd>
+    <div class="ec-h">오답 구현 패턴</div>
+    <dt><span>P1</span>주체 뒤바꿈</dt><dd>내용은 글에 있지만 행위자·대상을 바꿔 틀리게 만든다.</dd>
+    <dt><span>P2</span>핵심어 재사용</dt><dd>지문 어구를 그대로 가져와 '본 듯한' 선지로 만든다.</dd>
+    <dt><span>P3</span>한 단계 비약</dt><dd>글이 말한 강도·범위를 한 단계 넘긴다(explain → appeal).</dd>
+    <dt><span>P4</span>국소 정보</dt><dd>도입·사례 같은 일부분을 전체 주제처럼 일반화하거나, 소재상 그럴듯하지만 글에 없는 말.</dd>
+    <dt><span>P5</span>비유의 문자 해석</dt><dd>밑줄 비유를 사전적·일상적 의미로 읽게 만든다.</dd>
+    <dt><span>P6</span>반쪽 일치</dt><dd>절반은 맞고 절반이 틀린다.</dd>
+    <dt><span>P7</span>쌍둥이 위치</dt><dd>순서·삽입에서 확정 단서가 약한 인접 위치(특히 정답 ±1).</dd>
+    <dt><span>R</span>역방향</dt><dd>글의 방향을 정반대로 뒤집는다(통념 쪽·반박된 쪽).</dd>
+  </dl>
 </details>
 <div id="panel"></div>
 </div>
@@ -586,16 +616,48 @@ function controls(extra){
 
 function render(){
   const list = filtered();
-  if(state.mode==='list') panel.innerHTML = viewList(list);
-  else if(state.mode==='card') panel.innerHTML = viewCard(list);
-  else if(state.mode==='quiz') panel.innerHTML = viewQuiz(list);
-  else if(state.mode==='apx') panel.innerHTML = at ? viewATest() : viewApx();
-  else if(state.mode==='sheet') panel.innerHTML = viewSheet(list);
-  else panel.innerHTML = viewPoly();
+  let html;
+  if(state.mode==='list') html = viewList(list);
+  else if(state.mode==='card') html = viewCard(list);
+  else if(state.mode==='quiz') html = viewQuiz(list);
+  else if(state.mode==='apx') html = at ? viewATest() : viewApx();
+  else if(state.mode==='sheet') html = viewSheet(list);
+  else html = viewPoly();
+  paint(html);
   meter();
   if(state.mode==='list') listWatch();
   if(state.mode==='quiz' && timerOn && ses && !sesDone() && !answered) startTimer();
   else stopTimer();
+}
+
+/* 검색창에 한글을 치는 동안 화면을 통째로 다시 그리면 입력창이 새로 만들어져
+   조합 중이던 글자가 끊긴다(「ㄱ」「가」가 따로 들어가거나 커서가 튄다).
+   그래서 지금 타이핑 중인 입력창 노드는 그대로 두고 그 둘레만 새것으로 갈아 끼운다.
+   구조가 어긋나면 예전처럼 통째로 그린다. */
+function paint(html){
+  const keep = document.activeElement;
+  if(!keep || keep.id !== 'q' || !panel.contains(keep)){ panel.innerHTML = html; return; }
+  const fresh = document.createElement('div');
+  fresh.innerHTML = html;
+  const twin = fresh.querySelector('#q');
+  if(!twin || !graft(panel, fresh, keep, twin)) panel.innerHTML = html;
+}
+// 입력창으로 내려가는 길의 노드만 남기고, 그 둘레는 새로 그린 것으로 바꾼다
+function graft(live, fresh, keep, twin){
+  const lc = [...live.childNodes].find(n=> n === keep || n.contains(keep));
+  const fc = [...fresh.childNodes].find(n=> n === twin || n.contains(twin));
+  if(!lc || !fc) return false;
+  if(lc !== keep){
+    if(lc.nodeName !== fc.nodeName) return false;
+    [...lc.attributes].forEach(a=>{ if(!fc.hasAttribute(a.name)) lc.removeAttribute(a.name); });
+    [...fc.attributes].forEach(a=>{ if(lc.getAttribute(a.name) !== a.value) lc.setAttribute(a.name, a.value); });
+    if(!graft(lc, fc, keep, twin)) return false;
+  }
+  [...live.childNodes].forEach(n=>{ if(n !== lc) live.removeChild(n); });
+  const fk = [...fresh.childNodes], at = fk.indexOf(fc);
+  fk.slice(0, at).forEach(n=> live.insertBefore(n, lc));
+  fk.slice(at + 1).forEach(n=> live.appendChild(n));
+  return true;
 }
 
 /* ── 목록은 한 번에 다 그리지 않는다 ──────────────────────────────────
@@ -1796,8 +1858,9 @@ document.addEventListener('input', e=>{
   if(e.target.id==='q'){
     state.q = e.target.value; ses=null; quizQ=null;
     render();
+    // 입력창을 그대로 두었으면 손대지 않는다 — 조합 중에 커서를 옮기면 그것도 한글을 끊는다
     const el = document.getElementById('q');
-    if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    if(el && el !== document.activeElement){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
   }
 });
 
