@@ -376,7 +376,7 @@ td.ge .chunk{margin-top:0;font-size:12.5px}
   <ol>
     <li>1~2문장 꼼꼼히 읽기! <em>(orient)</em></li>
     <li>모르겠는 문장 → 예시로 가기 <i>or</i> 뒷문장 읽기
-      <div class="et-sub"><span><em>a)</em> 대조 전 : 위아래 같은 논리</span><span><em>b)</em> 대조 후 : 대조 외 내용 버리기</span></div></li>
+      <div class="et-sub"><span><em>a)</em> 대조 전 : 위아래 같은 논리</span><span><em>b)</em> 대조 후 : 대조 부분 윗문장 내용 버리기 (통념-반박, 대조 등)</span></div></li>
     <li>듣기 풀 때 집중! : 선지를 통해 예측</li>
     <li>시간에 쫓겨 명사 위주 독해 / 잔상 독해 / 무의미한 밑줄 독해 <em>✗</em></li>
     <li>선지 꼼꼼히 : <em>단어 하나로 가른다</em></li>
@@ -586,16 +586,48 @@ function controls(extra){
 
 function render(){
   const list = filtered();
-  if(state.mode==='list') panel.innerHTML = viewList(list);
-  else if(state.mode==='card') panel.innerHTML = viewCard(list);
-  else if(state.mode==='quiz') panel.innerHTML = viewQuiz(list);
-  else if(state.mode==='apx') panel.innerHTML = at ? viewATest() : viewApx();
-  else if(state.mode==='sheet') panel.innerHTML = viewSheet(list);
-  else panel.innerHTML = viewPoly();
+  let html;
+  if(state.mode==='list') html = viewList(list);
+  else if(state.mode==='card') html = viewCard(list);
+  else if(state.mode==='quiz') html = viewQuiz(list);
+  else if(state.mode==='apx') html = at ? viewATest() : viewApx();
+  else if(state.mode==='sheet') html = viewSheet(list);
+  else html = viewPoly();
+  paint(html);
   meter();
   if(state.mode==='list') listWatch();
   if(state.mode==='quiz' && timerOn && ses && !sesDone() && !answered) startTimer();
   else stopTimer();
+}
+
+/* 검색창에 한글을 치는 동안 화면을 통째로 다시 그리면 입력창이 새로 만들어져
+   조합 중이던 글자가 끊긴다(「ㄱ」「가」가 따로 들어가거나 커서가 튄다).
+   그래서 지금 타이핑 중인 입력창 노드는 그대로 두고 그 둘레만 새것으로 갈아 끼운다.
+   구조가 어긋나면 예전처럼 통째로 그린다. */
+function paint(html){
+  const keep = document.activeElement;
+  if(!keep || keep.id !== 'q' || !panel.contains(keep)){ panel.innerHTML = html; return; }
+  const fresh = document.createElement('div');
+  fresh.innerHTML = html;
+  const twin = fresh.querySelector('#q');
+  if(!twin || !graft(panel, fresh, keep, twin)) panel.innerHTML = html;
+}
+// 입력창으로 내려가는 길의 노드만 남기고, 그 둘레는 새로 그린 것으로 바꾼다
+function graft(live, fresh, keep, twin){
+  const lc = [...live.childNodes].find(n=> n === keep || n.contains(keep));
+  const fc = [...fresh.childNodes].find(n=> n === twin || n.contains(twin));
+  if(!lc || !fc) return false;
+  if(lc !== keep){
+    if(lc.nodeName !== fc.nodeName) return false;
+    [...lc.attributes].forEach(a=>{ if(!fc.hasAttribute(a.name)) lc.removeAttribute(a.name); });
+    [...fc.attributes].forEach(a=>{ if(lc.getAttribute(a.name) !== a.value) lc.setAttribute(a.name, a.value); });
+    if(!graft(lc, fc, keep, twin)) return false;
+  }
+  [...live.childNodes].forEach(n=>{ if(n !== lc) live.removeChild(n); });
+  const fk = [...fresh.childNodes], at = fk.indexOf(fc);
+  fk.slice(0, at).forEach(n=> live.insertBefore(n, lc));
+  fk.slice(at + 1).forEach(n=> live.appendChild(n));
+  return true;
 }
 
 /* ── 목록은 한 번에 다 그리지 않는다 ──────────────────────────────────
@@ -1796,8 +1828,9 @@ document.addEventListener('input', e=>{
   if(e.target.id==='q'){
     state.q = e.target.value; ses=null; quizQ=null;
     render();
+    // 입력창을 그대로 두었으면 손대지 않는다 — 조합 중에 커서를 옮기면 그것도 한글을 끊는다
     const el = document.getElementById('q');
-    if(el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    if(el && el !== document.activeElement){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
   }
 });
 
